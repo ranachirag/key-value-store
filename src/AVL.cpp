@@ -21,6 +21,20 @@ void AVL_Tree::balance_tree(Node *root_node) {
 
     } else if (root->l->balance_factor == -1){
       // Rotate right then left
+      Node *old_root;
+      Node *old_right;
+      Node *old_right_left;
+
+      old_root = root;
+      old_right = root->r;
+      old_right_left = root->r->l;
+
+      old_root->r = old_right_left->l;
+      old_right->l = old_right_left->r;
+      old_right_left->l = old_root;
+      old_right_left->r = old_right;
+
+      root = old_right_left;
     }
   } else if (root->balance_factor == -2){
     if (root->l->balance_factor == -1){
@@ -37,6 +51,20 @@ void AVL_Tree::balance_tree(Node *root_node) {
 
     } else if (root->l->balance_factor == 1){
       // Rotate left then right
+      Node *old_root;
+      Node *old_left;
+      Node *old_left_right;
+
+      old_root = root;
+      old_left = root->l;
+      old_left_right = root->l->r;
+
+      old_root->l = old_left_right->r;
+      old_left->r = old_left_right->l;
+      old_left_right->r = old_root;
+      old_left_right->l = old_left;
+
+      root = old_left_right;
     }
   }
 
