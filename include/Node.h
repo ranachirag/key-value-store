@@ -7,6 +7,8 @@ class Node {
     int key;
     int value;
     int balance_factor;
+    int height;
+    Node *parent;
     Node *l;
     Node *r;
 };
