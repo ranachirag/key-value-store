@@ -1,18 +1,27 @@
 #ifndef AVL_TREE_H
 #define AVL_TREE_H
 
+#include <iostream>
+#include <algorithm>
+#include <list>
 #include "Node.h"
 
 class AVL_Tree {
   private:
-    void balance_tree(Node *root_node);
-    int get_height(Node *root_node); // get height of node
-    int get_balance_factor(Node *root_node); // get balance factor of gicven node
-  public:
     Node *root;
-    Node *insert_node(int key, int value);
-    void delete_node(int key);
-    Node find_node(int key); // Return value only instead of Node?
+    Node *balance_tree(Node *root_node, long int key);
+    Node *insert_node(Node *root_node, long int key, long int value);
+    Node *find_node(Node *root_node, long int key);
+    std::list<std::pair<long int, long int>> range_search_nodes(Node *root_node, long int key1, long int key2);
+  public:
+    AVL_Tree();
+    int size;
+    long int min_key;
+    long int max_key;
+    void insert(long int key, long int value);
+    int get_value(long int key);
+    std::list<std::pair<long int, long int>> range_search(long int key1, long int key2);
+    void print_tree();
 };
 
 #endif

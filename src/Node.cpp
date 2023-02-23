@@ -1,7 +1,7 @@
 #include "Node.h"
 
-Node::Node (int key, int value) : key(key), value(value) {
+Node::Node (long int key, long int value) : key(key), value(value) {
   l = nullptr;
   r = nullptr;
-  parent = nullptr;
+  height = 1;
 }

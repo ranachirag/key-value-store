@@ -3,12 +3,10 @@
 
 class Node {
   public:
-    Node (int key, int value);
-    int key;
-    int value;
-    int balance_factor;
+    Node (long int key, long int value);
+    long int key;
+    long int value;
     int height;
-    Node *parent;
     Node *l;
     Node *r;
 };
