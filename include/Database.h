@@ -1,20 +1,23 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include <vector>
-#include <tuple>
+#include <algorithm>
+#include <list>
 #include "AVL.h"
+#include "Storage.h"
 
 class Database {
   private:
-    AVL_Tree memtable;
-  public:
+    
+  public: 
+    AVL_Tree *memtable;
+    Storage *storage;
     Database (int memtable_size);
     int memtable_size;
     void open();
     void put(int key, int value);
     int get(int key);
-    std::vector<int> scan(int key1, int key2);
+    std::list<std::pair<long int, long int>> scan(int key1, int key2);
     void close(); 
 };
 

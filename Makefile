@@ -225,6 +225,54 @@ src/Node.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Node.cpp.s
 .PHONY : src/Node.cpp.s
 
+src/SST.o: src/SST.cpp.o
+.PHONY : src/SST.o
+
+# target to build an object file
+src/SST.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/SST.cpp.o
+.PHONY : src/SST.cpp.o
+
+src/SST.i: src/SST.cpp.i
+.PHONY : src/SST.i
+
+# target to preprocess a source file
+src/SST.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/SST.cpp.i
+.PHONY : src/SST.cpp.i
+
+src/SST.s: src/SST.cpp.s
+.PHONY : src/SST.s
+
+# target to generate assembly for a file
+src/SST.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/SST.cpp.s
+.PHONY : src/SST.cpp.s
+
+src/Storage.o: src/Storage.cpp.o
+.PHONY : src/Storage.o
+
+# target to build an object file
+src/Storage.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Storage.cpp.o
+.PHONY : src/Storage.cpp.o
+
+src/Storage.i: src/Storage.cpp.i
+.PHONY : src/Storage.i
+
+# target to preprocess a source file
+src/Storage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Storage.cpp.i
+.PHONY : src/Storage.cpp.i
+
+src/Storage.s: src/Storage.cpp.s
+.PHONY : src/Storage.s
+
+# target to generate assembly for a file
+src/Storage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Storage.cpp.s
+.PHONY : src/Storage.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -246,6 +294,12 @@ help:
 	@echo "... src/Node.o"
 	@echo "... src/Node.i"
 	@echo "... src/Node.s"
+	@echo "... src/SST.o"
+	@echo "... src/SST.i"
+	@echo "... src/SST.s"
+	@echo "... src/Storage.o"
+	@echo "... src/Storage.i"
+	@echo "... src/Storage.s"
 .PHONY : help
 
 

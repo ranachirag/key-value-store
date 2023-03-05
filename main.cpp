@@ -6,7 +6,9 @@
 
 int main() {
   // Memtable memtable = new Memtable(5);
-  AVL_Tree *avl_tree = new AVL_Tree();
+  Database *kv_store = new Database(10);
+
+  AVL_Tree *avl_tree = kv_store->memtable;
   avl_tree->insert(5, 101);
   avl_tree->insert(8, 102);
   avl_tree->insert(1, 103);
@@ -25,4 +27,5 @@ int main() {
                 [](const auto &e) {
                     std::cout << "Key: " << e.first << " Value: " << e.second << std::endl;
                 });
+  kv_store->storage->create_SST(lst);
 }

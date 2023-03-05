@@ -149,7 +149,7 @@ Node *AVL_Tree::find_node(Node *root_node, long int key) {
 
 void AVL_Tree::insert(long int key, long int value) {
   root = insert_node(root, key, value);
-  size += sizeof(value);
+  size += VALUE_SIZE;
   if (key < min_key) {
     min_key = key;
   }
@@ -204,3 +204,4 @@ std::list<std::pair<long int,long int>> AVL_Tree::range_search_nodes(Node *root_
 std::list<std::pair<long int, long int>> AVL_Tree::range_search(long int key1, long int key2) {
   return range_search_nodes(root, key1, key2);
 }
+

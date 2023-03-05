@@ -6,6 +6,9 @@
 #include <list>
 #include "Node.h"
 
+#define KEY_SIZE 4
+#define VALUE_SIZE 4
+
 class AVL_Tree {
   private:
     Node *root;
