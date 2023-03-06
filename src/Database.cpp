@@ -68,21 +68,18 @@ void Database::open(std::string db_name) {
         }
     }
 
-
-
-  // TODO: Use different Storage constructors based on if SSTs already exist or not
-
   memtable = new AVL_Tree();
 }
 
 void Database::put(long key, long value) {
   // TODO
 
-  // If sizeof(key) + memtable->size  > memtable_size, 
-  //   call range_scan
-  //   create SST
-  //   clear memtable (AVL Tree)
-  // Insert key, value into memtable
+  if((sizeof(key) + memtable->size)  > memtable_size) {
+    std::vector<std::pair<long, long>> lst = memtable->range_search(memtable->min_key, memtable->max_key);
+    storage->create_SST(lst);
+    memtable->reset_tree();
+  }
+  memtable->insert(key, value);
   
 }
 

@@ -147,6 +147,16 @@ Node *AVL_Tree::find_node(Node *root_node, long key) {
   return NULL;
 }
 
+void AVL_Tree::reset_tree_nodes(Node *&root_node) {
+  if(!root_node) {
+    return;
+  } 
+  reset_tree_nodes(root_node->l);
+  reset_tree_nodes(root_node->r);
+  delete root_node;
+  root_node = nullptr;
+}
+
 
 void AVL_Tree::insert(long key, long value) {
   root = insert_node(root, key, value);
@@ -205,4 +215,10 @@ std::vector<std::pair<long, long>> AVL_Tree::range_search_nodes(Node *root_node,
 std::vector<std::pair<long, long>> AVL_Tree::range_search(long key1, long key2) {
   return range_search_nodes(root, key1, key2);
 }
+
+void AVL_Tree::reset_tree() {
+  reset_tree_nodes(root);
+  size = 0;
+}
+
 

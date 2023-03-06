@@ -9,17 +9,16 @@
 
 Storage::Storage(std::string db_name) : db_name(db_name) {
   // TODO: Initialize to the SSTs to empty vector
-  std::vector<int> SSTs;
+  std::vector<SST *> SSTs;
 }
 
+
 Storage::Storage(std::string db_name, std::vector<std::string> sst_files) : db_name(db_name) {
-  std::vector<int> SSTs;
+  std::vector<SST *> SSTs;
 
   // TODO: Initialize to the SSTs class array to create SST objects from parameters (filepath of an SST = db_name + / + SST file name)
   for (std::string filename : sst_files) {
-    std::string filepath = db_name + "/" + filename;
-    SST *sst_to_add = new SST_Array(filepath);
-    // SSTs.push_back();
+    add_SST(filename);
   }
 }
 
@@ -27,11 +26,28 @@ int Storage::num_SST() {
   return SSTs.size();
 }
 
-int Storage::create_SST(std::vector<std::pair<long, long>> data) {
+std::string Storage::get_SST_filepath(std::string sst_filename) {
+  std::string filepath = db_name + "/" + sst_filename;
+  return filepath;
+}
+
+std::string Storage::get_SST_filename() {
   int num_SST_total = num_SST();
   std::string filename = "SST_" + std::to_string(num_SST_total) + ".bin";
+  return filename;
+}
+
+void Storage::add_SST(std::string sst_filename) {
+  std::string filepath = get_SST_filepath(sst_filename);
+  SST *sst_to_add = new SST(filepath);
+  SSTs.push_back(sst_to_add);
+}
+
+int Storage::create_SST(std::vector<std::pair<long, long>> data) {
+  std::string filename = get_SST_filename();
+  std::string filepath = get_SST_filepath(filename);
   
-  int fd = open(filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666); // Add O_DIRECT Flag
+  int fd = open(filepath.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666); // Add O_DIRECT Flag
 
   if (fd ==-1) {
       perror("Error opening file");
@@ -42,9 +58,6 @@ int Storage::create_SST(std::vector<std::pair<long, long>> data) {
   long* buffer = reinterpret_cast<long*>(data.data());
   long size = data.size() * 2 * sizeof(long);
   long num_blocks = size / BLOCK_SIZE; 
-  std::cout << "Size " << data.size() << std::endl;
-  std::cout << "Number of Blocks " << num_blocks << std::endl;
-  std::cout << "Value " << buffer[4096*2] << std::endl;
 
   long offset = 0;
   long size_unwritten = size;
@@ -65,8 +78,7 @@ int Storage::create_SST(std::vector<std::pair<long, long>> data) {
   close(fd);
 
   // TODO: Add file name to list of SSTs in this storage class
-  
-
+  add_SST(filename);
 }
 
 SST Storage::read_SST() {
@@ -85,5 +97,10 @@ SST Storage::read_SST() {
 
 
 }
+
+
+// Search:
+// Loop over all SST files
+// call SST.search
 
 
