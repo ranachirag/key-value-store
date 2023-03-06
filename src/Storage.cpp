@@ -2,45 +2,72 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <vector>
+#include <string>
 #include "Storage.h"
 #include "SST.h"
 
-int Storage::create_SST(std::list<std::pair<long int, long int>> data) {
-  char filename[] = "test.bin";
-  
-  int fd = open(filename, O_WRONLY | O_DIRECT); // Add O_DIRECT Flag
+Storage::Storage(std::string db_name) : db_name(db_name) {
+  num_SST = 0;
 
-  printf("fd = %d\n", fd);
+  // TODO: Initialize to the SSTs to empty vector
+}
+
+Storage::Storage(std::string db_name, std::vector<std::string> SSTs) : db_name(db_name) {
+  num_SST = 0;
+
+  // TODO: Initialize to the SSTs class array to create SST objects from parameters (filepath of an SST = db_name + / + SST file name)
+}
+
+
+int Storage::create_SST(std::vector<std::pair<long, long>> data) {
+  std::string filename = db_name + "_SST_" + std::to_string(num_SST) + ".bin";
+  
+  int fd = open(filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666); // Add O_DIRECT Flag
 
   if (fd ==-1) {
       perror("Error opening file");
   }
 
-  int nbytes = 0;
-  int offset = 0;
+  // TODO: Do size, num_blocks, offset, size_unwritten need to be long?
 
-  // TODO: Write BLOCK_SIZE (4KB) bytes to file
-  // TODO: How to convert std::list into a buffer?
+  long* buffer = reinterpret_cast<long*>(data.data());
+  long size = data.size() * 2 * sizeof(long);
+  long num_blocks = size / BLOCK_SIZE; 
+  std::cout << "Size " << data.size() << std::endl;
+  std::cout << "Number of Blocks " << num_blocks << std::endl;
+  std::cout << "Value " << buffer[4096*2] << std::endl;
 
-  for (auto const i : data) {
-    nbytes = pwrite(fd, &(i.first), sizeof(long int), offset);
-    offset += sizeof(long int);
-    nbytes = pwrite(fd, &(i.second), sizeof(long int), offset);
-    offset += sizeof(long int);
+  long offset = 0;
+  long size_unwritten = size;
+  long* buf_unwritten = buffer;
+  const int block_size_long = BLOCK_SIZE / sizeof(long);
+
+  for (long i = 0; i < num_blocks; i++) {
+    pwrite(fd, buf_unwritten, BLOCK_SIZE, offset);
+    offset += BLOCK_SIZE;
+    size_unwritten -= BLOCK_SIZE;
+    buf_unwritten += block_size_long;
+  }
+
+  if(size_unwritten > 0) {
+    pwrite(fd, buf_unwritten, size_unwritten, offset);
   }
 
   // TODO: Add file name to list of SSTs in this storage class
 
   close(fd);
 
+  num_SST++;
+
   return 0;
 
 }
 
-SST Storage::open_SST() {
+SST Storage::read_SST() {
   char filename[] = "test.bin";
   
-  int fd = open(filename, O_RDONLY | O_DIRECT); // Add O_DIRECT Flag
+  int fd = open(filename, O_RDONLY | O_CREAT); // Add O_DIRECT Flag
 
   if (fd ==-1) {
       perror("Error opening file");

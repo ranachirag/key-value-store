@@ -2,22 +2,24 @@
 #define DATABASE_H
 
 #include <algorithm>
-#include <list>
+#include <vector>
+#include <string>
 #include "AVL.h"
 #include "Storage.h"
 
 class Database {
   private:
-    
+    std::string name;
+    bool db_open;
   public: 
     AVL_Tree *memtable;
     Storage *storage;
-    Database (int memtable_size);
-    int memtable_size;
-    void open();
-    void put(int key, int value);
-    int get(int key);
-    std::list<std::pair<long int, long int>> scan(int key1, int key2);
+    Database (long memtable_size);
+    long memtable_size;
+    void open(std::string db_name);
+    void put(long key, long value);
+    long get(long key);
+    std::vector<std::pair<long, long>> scan(long key1, long key2);
     void close(); 
 };
 

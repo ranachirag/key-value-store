@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <algorithm>
-#include <list>
+#include <vector>
 #include "Node.h"
 
 #define KEY_SIZE 4
@@ -12,18 +12,18 @@
 class AVL_Tree {
   private:
     Node *root;
-    Node *balance_tree(Node *root_node, long int key);
-    Node *insert_node(Node *root_node, long int key, long int value);
-    Node *find_node(Node *root_node, long int key);
-    std::list<std::pair<long int, long int>> range_search_nodes(Node *root_node, long int key1, long int key2);
+    Node *balance_tree(Node *root_node, long key);
+    Node *insert_node(Node *root_node, long key, long value);
+    Node *find_node(Node *root_node, long key);
+    std::vector<std::pair<long, long>> range_search_nodes(Node *root_node, long key1, long key2);
   public:
     AVL_Tree();
-    int size;
-    long int min_key;
-    long int max_key;
-    void insert(long int key, long int value);
-    int get_value(long int key);
-    std::list<std::pair<long int, long int>> range_search(long int key1, long int key2);
+    long size;
+    long min_key;
+    long max_key;
+    void insert(long key, long value);
+    long get_value(long key);
+    std::vector<std::pair<long, long>> range_search(long key1, long key2);
     void print_tree();
 };
 
