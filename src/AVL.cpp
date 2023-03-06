@@ -6,6 +6,7 @@
 #include <limits>
 
 AVL_Tree::AVL_Tree() {
+  root = NULL;
   size = 0;
   min_key = std::numeric_limits<long>::infinity();
   max_key = -std::numeric_limits<long>::infinity();

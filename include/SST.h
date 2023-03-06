@@ -4,16 +4,16 @@
 #include <string>
 
 class SST {
-  public: 
+  protected:
     std::string filepath; // Path to the SST File
-    SST(std::string filepath);
+  public: 
+    SST(std::string filepath) : filepath(filepath) {}
     virtual long search(long key);
 };
 
 class SST_Array : public SST {
   public:
-    SST_Array(std::string filepath);
-    std::string filepath; // How to Inherit from parent class?
+    SST_Array(std::string filepath) : SST(filepath) {}
     long search(long key);
 };
 

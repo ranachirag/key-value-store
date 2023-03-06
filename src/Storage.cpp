@@ -8,20 +8,28 @@
 #include "SST.h"
 
 Storage::Storage(std::string db_name) : db_name(db_name) {
-  num_SST = 0;
-
   // TODO: Initialize to the SSTs to empty vector
+  std::vector<int> SSTs;
 }
 
-Storage::Storage(std::string db_name, std::vector<std::string> SSTs) : db_name(db_name) {
-  num_SST = 0;
+Storage::Storage(std::string db_name, std::vector<std::string> sst_files) : db_name(db_name) {
+  std::vector<int> SSTs;
 
   // TODO: Initialize to the SSTs class array to create SST objects from parameters (filepath of an SST = db_name + / + SST file name)
+  for (std::string filename : sst_files) {
+    std::string filepath = db_name + "/" + filename;
+    SST *sst_to_add = new SST_Array(filepath);
+    // SSTs.push_back();
+  }
 }
 
+int Storage::num_SST() {
+  return SSTs.size();
+}
 
 int Storage::create_SST(std::vector<std::pair<long, long>> data) {
-  std::string filename = db_name + "_SST_" + std::to_string(num_SST) + ".bin";
+  int num_SST_total = num_SST();
+  std::string filename = "SST_" + std::to_string(num_SST_total) + ".bin";
   
   int fd = open(filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666); // Add O_DIRECT Flag
 
@@ -44,7 +52,7 @@ int Storage::create_SST(std::vector<std::pair<long, long>> data) {
   const int block_size_long = BLOCK_SIZE / sizeof(long);
 
   for (long i = 0; i < num_blocks; i++) {
-    pwrite(fd, buf_unwritten, BLOCK_SIZE, offset);
+    pwrite(fd, buf_unwritten, BLOCK_SIZE, offset); // Equivalent to 1 I/O
     offset += BLOCK_SIZE;
     size_unwritten -= BLOCK_SIZE;
     buf_unwritten += block_size_long;
@@ -54,13 +62,10 @@ int Storage::create_SST(std::vector<std::pair<long, long>> data) {
     pwrite(fd, buf_unwritten, size_unwritten, offset);
   }
 
-  // TODO: Add file name to list of SSTs in this storage class
-
   close(fd);
 
-  num_SST++;
-
-  return 0;
+  // TODO: Add file name to list of SSTs in this storage class
+  
 
 }
 
