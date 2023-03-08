@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <vector>
 #include <string>
+#include <utility>
 #include "Storage.h"
 #include "SST.h"
 
@@ -89,5 +90,17 @@ long Storage::get_value(long key, bool &val_found) {
   } 
   val_found = false;
   return -1;
+}
+
+std::vector<std::pair<long, long>> Storage::scan(long key1, long key2) {
+  std::vector<std::pair<long, long>> kv_range {};
+  
+  for(SST *sst : SSTs) {
+    
+    kv_range = sst->scan(key1, key2);
+    
+    // TODO: merge
+  } 
+  return kv_range;
 }
 

@@ -19,6 +19,7 @@ class Storage {
     Storage(std::string db_name, std::vector<std::string> sst_files);
     int add_to_storage(std::vector<std::pair<long, long>> data);
     long get_value(long key, bool &val_found);
+    std::vector<std::pair<long, long>> scan(long key1, long key2);
 };
 
 #endif

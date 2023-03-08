@@ -11,6 +11,7 @@ class SST {
   public: 
     SST(std::string filepath) : filepath(filepath) {}
     long search(long key, bool &val_found);
+    std::vector<std::pair<long, long>> scan(long key1, long key2);
 };
 
 // class SST_Array : public SST {

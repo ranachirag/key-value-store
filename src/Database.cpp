@@ -113,6 +113,16 @@ long Database::get(long key) {
 
 std::vector<std::pair<long, long>> Database::scan(long key1, long key2) {
   // TODO
+  std::vector<std::pair<long, long>> kv_range{};
+  // Range search Main Memory
+  // kv_range = memtable->range_search(key1, key2);
+
+  // Range search Storage
+  // kv_range = storage->scan(key1, key2);
+
+  // TODO: Merge results
+
+  return kv_range;
 }
 
 void Database::close() {

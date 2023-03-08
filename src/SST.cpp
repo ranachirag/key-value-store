@@ -8,7 +8,7 @@
 #include <utility>
 #include "SST.h"
 
-
+// TODO: Move to a utils file????
 std::vector<std::pair<long, long>> read_block(std::string filepath, long block_num) {
   int fd = open(filepath.c_str(), O_RDONLY | O_CREAT); // Add O_DIRECT Flag
 
@@ -29,28 +29,24 @@ std::vector<std::pair<long, long>> read_block(std::string filepath, long block_n
 
 }
 
-
-long SST::search(long key, bool &val_found) {
-  val_found = false;
+// TODO: Move to a utils file????
+long get_filesize(std::string filepath) {
   struct stat file_info;
   if (stat(filepath.c_str(), &file_info) == -1) {
     perror("Error reading file info");
     return -1;
   }
   long filesize = file_info.st_size;
-  if(filesize == 0) {
-    return -1;
-  }
-  long num_blocks = filesize / BLOCK_SIZE;
-  if ((num_blocks * BLOCK_SIZE) < filesize) {
-    num_blocks++;
-  }
+  return filesize;
+}
+
+
+long binary_search_blocks(std::string filepath, long num_blocks, long key) {
 
   long start_block = 0;
   long end_block = num_blocks - 1;
   long block_to_read;
 
-  bool val_block_found = false;
   long min_key_block;
   long max_key_block;
 
@@ -67,36 +63,120 @@ long SST::search(long key, bool &val_found) {
     } else if (key > max_key_block) {
       start_block = block_to_read + 1;
     } else {
-      val_block_found = true;
-      break;
+      return block_to_read;
     }
   }
+
+  // TODO: free std::vector<std::pair<long, long>> values ?
+
+  return -1;
+}
+
+// Returns index in key_values where matching key is found
+long binary_search_kv(std::vector<std::pair<long, long>> key_values, long key) {
+  long mid_index;
+  long mid_key;
+  long start_index = 0;
+  long end_index = key_values.size()-1;
+
+  while (start_index <= end_index) {
+    mid_index = start_index + ((end_index - start_index) / 2);
+    mid_key = key_values[mid_index].first;
+
+    if (key < mid_key) {
+      end_index = mid_index - 1; 
+    } else if (key > mid_key) {
+      start_index = mid_index + 1;
+    } else {
+      return mid_index;
+    }
+  }
+  return -1;
+}
+
+
+long SST::search(long key, bool &val_found) {
+  val_found = false;
+
+  long filesize = get_filesize(filepath);
+  if(filesize == 0) {
+    return -1;
+  }
+  long num_blocks = filesize / BLOCK_SIZE;
+  if ((num_blocks * BLOCK_SIZE) < filesize) {
+    num_blocks++;
+  }
+  
+  long block_containing_key = binary_search_blocks(filepath, num_blocks, key);
 
   // Binary search on the key-value pairs within the block 
-  long potential_value = -1;
-  if(val_block_found) {
-    long mid_index;
-    long mid_key;
-    long start_index = 0;
-    long end_index = values.size()-1;
+  long found_value = -1;
+  if(block_containing_key >= 0) {
+    std::vector<std::pair<long, long>> key_values = read_block(filepath, block_containing_key);
 
-    while (start_block <= end_block) {
-      mid_index = start_index + ((end_index - start_index) / 2);
-      mid_key = values[mid_index].first;
-      potential_value = values[mid_index].second;
+    long found_index = binary_search_kv(key_values, key);
 
-      if (key < mid_key) {
-        end_index = mid_index - 1; 
-      } else if (key > mid_key) {
-        start_index = mid_index + 1;
-      } else {
-        val_found = true;
-        return potential_value;
-      }
-    }
+    if (found_index >= 0) {
+      val_found = true;
+      found_value = key_values[found_index].second;
+      return found_value;
+    } 
   }
 
-  // TODO: free std::vector<std::pair<long, long>> values;
+  // TODO: free std::vector<std::pair<long, long>> key_values ?
    
-  return potential_value;
+  return found_value;
+}
+
+
+std::vector<std::pair<long, long>> SST::scan(long key1, long key2) {
+  std::vector<std::pair<long, long>> kv_found {};
+  long filesize = get_filesize(filepath);
+  if(filesize == 0) {
+    return kv_found;
+  }
+  long num_blocks = filesize / BLOCK_SIZE;
+  if ((num_blocks * BLOCK_SIZE) < filesize) {
+    num_blocks++;
+  }
+  
+  long start_key = key1;
+  long end_key = key2;
+
+
+  
+  long block_containing_key = binary_search_blocks(filepath, num_blocks, key1);
+  
+  if(block_containing_key >= 0) {
+
+    std::vector<std::pair<long, long>> key_values = read_block(filepath, block_containing_key);
+
+    long found_index = binary_search_kv(key_values, key1);
+    if (found_index >= 0) {
+      
+      // TODO: Fix repetitive code
+
+      for(int i = found_index; i < key_values.size(); i++) {
+        if(key_values[i].first <= key2) {
+          kv_found.push_back(key_values[i]);
+        } else {
+          return kv_found;
+        }
+      }
+
+      long block_containing_range = block_containing_key + 1;
+      while(block_containing_range < num_blocks) {
+        key_values = read_block(filepath, block_containing_range);
+        for(int i = 0; i < key_values.size(); i++) {
+          if(key_values[i].first <= key2) {
+            kv_found.push_back(key_values[i]);
+          } else {
+            return kv_found;
+          }
+        }
+      }
+      
+    } 
+  }
+  return kv_found;
 }
