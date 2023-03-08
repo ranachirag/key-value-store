@@ -23,7 +23,7 @@ class AVL_Tree {
     long min_key;
     long max_key;
     void insert(long key, long value);
-    long get_value(long key);
+    long get_value(long key, bool & val_found);
     std::vector<std::pair<long, long>> range_search(long key1, long key2);
     void reset_tree();
     void print_tree();

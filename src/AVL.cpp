@@ -133,7 +133,9 @@ Node *AVL_Tree::insert_node(Node *root_node, long key, long value) {
 }
 
 Node *AVL_Tree::find_node(Node *root_node, long key) {
-  if (key == root_node->key) {
+  if(root_node == NULL){
+    return NULL;
+  } else if (key == root_node->key) {
     return root_node;
   } else if (key < root_node->key) {
     if (root_node->l != NULL){
@@ -170,11 +172,13 @@ void AVL_Tree::insert(long key, long value) {
 }
 
 
-long AVL_Tree::get_value(long key) {
+long AVL_Tree::get_value(long key, bool &val_found) {
   Node *node = find_node(root, key);
   if (node == NULL) {
+    val_found = false;
     return -1;
   }
+  val_found = true;
   return node->value;
 }
 

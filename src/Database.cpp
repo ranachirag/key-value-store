@@ -22,7 +22,6 @@ Database::Database (long memtable_size) : memtable_size(memtable_size){
 }
 
 void Database::open(std::string db_name) {
-  // TODO
   // Read directory
   if (db_open) {
     std::string err_msg = "Please close the " + name + " database first";
@@ -32,7 +31,6 @@ void Database::open(std::string db_name) {
   db_open = true;
   name = db_name;
 
-  // TODO: Create a directory with name db_name if it already does not exist
   struct stat dir_info;
   const char *db_name_chr = db_name.c_str();
 
@@ -72,20 +70,44 @@ void Database::open(std::string db_name) {
 }
 
 void Database::put(long key, long value) {
-  // TODO
+  if(!db_open) {
+    perror("Please open a database first");
+    return;
+  }
 
-  if((sizeof(key) + memtable->size)  > memtable_size) {
+  if((sizeof(key) + memtable->size) > memtable_size) {
     std::vector<std::pair<long, long>> lst = memtable->range_search(memtable->min_key, memtable->max_key);
-    storage->create_SST(lst);
+    storage->add_to_storage(lst);
     memtable->reset_tree();
   }
   memtable->insert(key, value);
   
 }
 
+// TODO: Error checking for when key doesn't exist, How to handle?
 long Database::get(long key) {
-  // TODO
+  if(!db_open) {
+    perror("Please open a database first");
+    return -1;
+  }
 
+  // Search Main Memory
+  bool val_found;
+  long val;
+
+ 
+  val = memtable->get_value(key, val_found);
+  if (val_found) {
+    return val;
+  }
+
+  // Search Storage
+  val = storage->get_value(key, val_found);
+  if (val_found) {
+    return val;
+  }
+
+  return -1;
   
 }
 

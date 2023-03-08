@@ -3,12 +3,14 @@
 
 #include <string>
 
+#define BLOCK_SIZE 4096
+
 class SST {
   private:
     std::string filepath; // Path to the SST File
   public: 
     SST(std::string filepath) : filepath(filepath) {}
-    long search(long key);
+    long search(long key, bool &val_found);
 };
 
 // class SST_Array : public SST {

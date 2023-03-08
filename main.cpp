@@ -12,12 +12,14 @@ int main() {
   kv_store->open(db_name);
 
 
-  // AVL_Tree *avl_tree = kv_store->memtable;
-  int range = 1000;
-  for(int i = 0; i < range; i++) {
-    std::cout << "Iteration: " << i << std::endl;
-    kv_store->put(i, i);
-  }
+  // int range = 1000;
+  // for(int i = 0; i < range; i++) {
+  //   std::cout << "Iteration: " << i << std::endl;
+  //   kv_store->put(i, 1000-i);
+  // }
+
+  long val = kv_store->get(578);
+  std::cout << "Val Found: " << val << std::endl;
   // avl_tree->print_tree();
   // std::vector<std::pair<long, long>> lst = avl_tree->range_search(0, range);
   // std::cout << "DONE RANGE SEARCH" << std::endl;

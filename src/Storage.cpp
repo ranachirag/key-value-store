@@ -2,13 +2,13 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include <vector>
 #include <string>
 #include "Storage.h"
 #include "SST.h"
 
 Storage::Storage(std::string db_name) : db_name(db_name) {
-  // TODO: Initialize to the SSTs to empty vector
   std::vector<SST *> SSTs;
 }
 
@@ -16,9 +16,8 @@ Storage::Storage(std::string db_name) : db_name(db_name) {
 Storage::Storage(std::string db_name, std::vector<std::string> sst_files) : db_name(db_name) {
   std::vector<SST *> SSTs;
 
-  // TODO: Initialize to the SSTs class array to create SST objects from parameters (filepath of an SST = db_name + / + SST file name)
   for (std::string filename : sst_files) {
-    add_SST(filename);
+    create_SST(filename);
   }
 }
 
@@ -37,13 +36,13 @@ std::string Storage::get_SST_filename() {
   return filename;
 }
 
-void Storage::add_SST(std::string sst_filename) {
-  std::string filepath = get_SST_filepath(sst_filename);
+void Storage::create_SST(std::string filename) {
+  std::string filepath = get_SST_filepath(filename);
   SST *sst_to_add = new SST(filepath);
   SSTs.push_back(sst_to_add);
 }
 
-int Storage::create_SST(std::vector<std::pair<long, long>> data) {
+int Storage::add_to_storage(std::vector<std::pair<long, long>> data) {
   std::string filename = get_SST_filename();
   std::string filepath = get_SST_filepath(filename);
   
@@ -77,30 +76,18 @@ int Storage::create_SST(std::vector<std::pair<long, long>> data) {
 
   close(fd);
 
-  // TODO: Add file name to list of SSTs in this storage class
-  add_SST(filename);
+  create_SST(filename);
 }
 
-SST Storage::read_SST() {
-  char filename[] = "test.bin";
-  
-  int fd = open(filename, O_RDONLY | O_CREAT); // Add O_DIRECT Flag
-
-  if (fd ==-1) {
-      perror("Error opening file");
-  }
-
-  // TODO: Read File
-  
-
-  close(fd);
-
-
+long Storage::get_value(long key, bool &val_found) {
+  long val;
+  for(SST *sst : SSTs) {
+    val = sst->search(key, val_found);
+    if (val_found) {
+      return val;
+    }
+  } 
+  val_found = false;
+  return -1;
 }
-
-
-// Search:
-// Loop over all SST files
-// call SST.search
-
 
