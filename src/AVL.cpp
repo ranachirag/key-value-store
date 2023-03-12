@@ -1,9 +1,10 @@
-#include "AVL.h"
-#include "Node.h"
 #include <iostream>
 #include <algorithm>
 #include <list>
 #include <limits>
+
+#include "AVL.h"
+#include "Node.h"
 
 AVL_Tree::AVL_Tree() {
   root = NULL;

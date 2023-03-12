@@ -2,10 +2,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
-#include <sys/stat.h>
 #include <vector>
 #include <string>
 #include <utility>
+
+#include <sys/stat.h>
+
 #include "SST.h"
 
 // TODO: Move to a utils file????

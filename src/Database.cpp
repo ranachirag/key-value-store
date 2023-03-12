@@ -1,10 +1,12 @@
 #include <algorithm>
 #include <list>
 #include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <dirent.h>
+
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "Database.h"
 #include "AVL.h"
 

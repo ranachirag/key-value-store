@@ -4,23 +4,81 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+
 #include "AVL.h"
 #include "Storage.h"
 
+/**
+ * This class represents a Key Value store database
+ */
 class Database {
-  private:
-    std::string name;
-    bool db_open;
-    AVL_Tree *memtable; // "Main Memory"
-    Storage *storage; // "Disk Storage"
   public: 
+    /**
+     * Constructor
+     * @param memtable_size The maximum size of the memtable
+    */
     Database (long memtable_size); 
-    long memtable_size; // Size of our main memory (AVL) before flushing to disk (SST)
-    void open(std::string db_name); // Read in SST files, AVL tree is always empty
-    void put(long key, long value); // Insert into main memory (AVL), if overflows memtable_size, flush into disk
-    long get(long key); // Search AVL tree (tree traversal) and all SSTs (binary search) for key
+
+    /**
+     * Open the database for usage
+     * @param db_name Name of database to open
+    */
+    void open(std::string db_name);
+    
+    /**
+     * Store a key with an associated value in the database 
+     * @param key Key
+     * @param value Value
+    */
+    void put(long key, long value); 
+
+    /**
+     * Retrieve the value with for an associated key
+     * @param key Key
+     * 
+     * @return Value associated with given key
+    */
+    long get(long key); 
+
+    /**
+     * Retrieve all key-value pairs in a given range of keys, in sorted order by keys
+     * @param key1 Start key of range
+     * @param key2 End key of range
+     * 
+     * @return All key-value pairs in given range
+    */
     std::vector<std::pair<long, long>> scan(long key1, long key2); 
-    void close(); // Flush current AVL tree (even if not full) as a SST
+
+    /**
+     * Close the database
+    */
+    void close(); 
+
+  private:
+    /**
+     * The maximum size of the memtable
+    */
+    const long memtable_size;
+
+    /**
+     * A boolean value indicating whether a database is open or not
+    */
+    bool db_open;
+
+    /**
+     * The name of the database currently open
+    */
+    std::string name;
+
+    /**
+     * Memtable
+    */
+    AVL_Tree * memtable; 
+
+    /**
+     * The maximum size of the memtable
+    */
+    Storage * storage; 
 };
 
 #endif

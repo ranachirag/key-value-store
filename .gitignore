@@ -39,3 +39,6 @@ CMakeCache.txt
 kvstore
 .DS_Store
 SST_*
+
+html/*
+latex/*
