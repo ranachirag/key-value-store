@@ -6,8 +6,10 @@
 #include <vector>
 #include <string>
 #include <utility>
+
 #include "Storage.h"
 #include "SST.h"
+#include "utils.h"
 
 Storage::Storage(std::string db_name) : db_name(db_name) {
   std::vector<SST *> SSTs;
@@ -40,67 +42,51 @@ std::string Storage::get_SST_filename() {
 void Storage::create_SST(std::string filename) {
   std::string filepath = get_SST_filepath(filename);
   SST *sst_to_add = new SST(filepath);
-  SSTs.push_back(sst_to_add);
+  SSTs.emplace_back(sst_to_add);
 }
 
-void Storage::add_to_storage(std::vector<std::pair<long, long>> data) {
+void Storage::add_to_storage(std::vector<std::pair<long, long>> &data) {
   std::string filename = get_SST_filename();
   std::string filepath = get_SST_filepath(filename);
   
-  int fd = open(filepath.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666); // Add O_DIRECT Flag
-
-  if (fd ==-1) {
-      perror("Error opening file");
-  }
-
-  // TODO: Do size, num_blocks, offset, size_unwritten need to be long?
 
   long* buffer = reinterpret_cast<long*>(data.data());
   long size = data.size() * 2 * sizeof(long);
-  long num_blocks = size / BLOCK_SIZE; 
-
-  long offset = 0;
-  long size_unwritten = size;
-  long* buf_unwritten = buffer;
-  const int block_size_long = BLOCK_SIZE / sizeof(long);
-
-  for (long i = 0; i < num_blocks; i++) {
-    pwrite(fd, buf_unwritten, BLOCK_SIZE, offset); // Equivalent to 1 I/O
-    offset += BLOCK_SIZE;
-    size_unwritten -= BLOCK_SIZE;
-    buf_unwritten += block_size_long;
+  int code = file_utils::write_data(filepath, buffer, size);
+  if(code == -1) {
+    perror("Error writing to file");
   }
-
-  if(size_unwritten > 0) {
-    pwrite(fd, buf_unwritten, size_unwritten, offset);
-  }
-
-  close(fd);
 
   create_SST(filename);
 }
 
 long Storage::get_value(long key, bool &val_found) {
   long val;
-  for(SST *sst : SSTs) {
+
+  for (auto it = SSTs.rbegin(); it != SSTs.rend(); ++it){
+    SST *sst = *it;
     val = sst->search(key, val_found);
     if (val_found) {
       return val;
     }
-  } 
+  }
   val_found = false;
   return -1;
 }
 
-std::vector<std::pair<long, long>> Storage::scan_storage(long key1, long key2) {
-  std::vector<std::pair<long, long>> kv_range {};
-  
-  for(SST *sst : SSTs) {
-    
-    kv_range = sst->scan(key1, key2);
-    
-    // TODO: merge
-  } 
-  return kv_range;
+int Storage::scan_storage(std::vector<std::pair<long, long>> &result,long key1, long key2) {
+  int scan_size;
+  for (auto it = SSTs.rbegin(); it != SSTs.rend(); ++it){
+    SST *sst = *it;
+    scan_size += sst->scan(result, key1, key2);
+  }
+
+  return scan_size;
+}
+
+void Storage::reset() {
+  for (auto ptr : SSTs) {
+    delete ptr;
+  }
 }
 

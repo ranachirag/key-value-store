@@ -32,7 +32,7 @@ class Storage {
      * 
      * @param data Key-value pairs (sorted by keys)
     */
-    void add_to_storage(std::vector<std::pair<long, long>> data);
+    void add_to_storage(std::vector<std::pair<long, long>> &data);
 
     /**
      * Retreive a value with a given associated key from SST storage
@@ -47,12 +47,18 @@ class Storage {
     /**
      * Retreive all key-value pairs with a given key range from SST storage
      * 
+     * @param result Results of range scan will be stored in this vector
      * @param key1 Start key of range
      * @param key2 End key of range
      * 
-     * @return All key-value pairs found within given key range
+     * @return Number of key-value pairs found within given key range
     */
-    std::vector<std::pair<long, long>> scan_storage(long key1, long key2);
+    int scan_storage(std::vector<std::pair<long, long>> &result, long key1, long key2);
+
+    /**
+     * Reset Storage object
+     */
+    void reset();
 
   private:
     /**

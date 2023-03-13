@@ -11,16 +11,38 @@ int main() {
   Database *kv_store = new Database(8*100);
   kv_store->open(db_name);
 
-
-  // int range = 1000;
-  // for(int i = 0; i < range; i++) {
-  //   std::cout << "Iteration: " << i << std::endl;
-  //   kv_store->put(i, 1000-i);
-  // }
+  int range = 1000;
+  for(int i = 0; i < range; i++) {
+    // std::cout << "Iteration: " << i << std::endl;
+    kv_store->put(i, 1000-i);
+  }
 
   // long val = kv_store->get(578);
-  std::vector<std::pair<long, long>> result = kv_store->scan(40, 300);
-  // std::cout << "Val Found: " << val << std::endl;
+  std::vector<std::pair<long, long>> result;
+  int result_size = kv_store->scan(result, 750, 950);
+  std::cout << "HERE: " << result_size << std::endl;
+  for (std::pair<long, long> pair : result) {
+      std::cout << pair.first << " " << pair.second << std::endl;
+  }
+  kv_store->close();
+
+
+  std::string db_name2 = "test2";
+  kv_store->open(db_name2);
+
+  int range2 = 10000;
+  for(int i = 0; i < range2; i++) {
+    // std::cout << "Iteration: " << i << std::endl;
+    kv_store->put(i, 10000-i);
+  }
+
+  // long val = kv_store->get(578);
+  std::vector<std::pair<long, long>> result2;
+  result_size = kv_store->scan(result2, 750, 9500);
+  for (std::pair<long, long> pair : result2) {
+      std::cout << pair.first << " " << pair.second << std::endl;
+  }
+  kv_store->close();
   // avl_tree->print_tree();
   // std::vector<std::pair<long, long>> lst = avl_tree->range_search(0, range);
   // std::cout << "DONE RANGE SEARCH" << std::endl;
@@ -29,6 +51,6 @@ int main() {
   //               [](const auto &e) {
   //                   std::cout << "Key: " << e.first << " Value: " << e.second << std::endl;
   //               });
-  // kv_store->storage->create_SST(lst);
+
   
 }

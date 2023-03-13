@@ -18,9 +18,6 @@ bool sst_filename_compare(std::string file_a, std::string file_b) {
 
 Database::Database (long memtable_size) : memtable_size(memtable_size){
   db_open = false;
-  // REMOVE After testing
-  memtable = new AVL_Tree();
-  storage = new Storage(name);
 }
 
 void Database::open(std::string db_name) {
@@ -78,7 +75,8 @@ void Database::put(long key, long value) {
   }
 
   if((sizeof(key) + memtable->size) > memtable_size) {
-    std::vector<std::pair<long, long>> lst = memtable->range_search(memtable->min_key, memtable->max_key);
+    std::vector<std::pair<long, long>> lst;
+    int lst_size = memtable->range_search(lst, memtable->min_key, memtable->max_key);
     storage->add_to_storage(lst);
     memtable->reset_tree();
   }
@@ -113,20 +111,30 @@ long Database::get(long key) {
   
 }
 
-std::vector<std::pair<long, long>> Database::scan(long key1, long key2) {
-  // TODO
-  std::vector<std::pair<long, long>> kv_range{};
+int Database::scan(std::vector<std::pair<long, long>> &result, long key1, long key2) {
+  
   // Range search Main Memory
-  // kv_range = memtable->range_search(key1, key2);
+  int kv_range_mem_size = memtable->range_search(result, key1, key2);
 
   // Range search Storage
-  // kv_range = storage->scan(key1, key2);
+  int kv_range_storage_size = storage->scan_storage(result, key1, key2);
 
-  // TODO: Merge results
-
-  return kv_range;
+  return kv_range_mem_size + kv_range_storage_size;
 }
 
 void Database::close() {
-  // TODO
+  if(db_open) {
+    if(memtable->size > 0) {
+      std::vector<std::pair<long, long>> lst;
+      int lst_size = memtable->range_search(lst, memtable->min_key, memtable->max_key);
+      storage->add_to_storage(lst);
+    }
+    memtable->reset_tree();
+    storage->reset();
+    
+    delete memtable;
+    delete storage;
+
+    db_open = false;
+  }
 }

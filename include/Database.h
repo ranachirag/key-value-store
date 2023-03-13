@@ -42,12 +42,14 @@ class Database {
 
     /**
      * Retrieve all key-value pairs in a given range of keys, in sorted order by keys
+     * 
+     * @param result Results of range scan will be stored in this vector
      * @param key1 Start key of range
      * @param key2 End key of range
      * 
-     * @return All key-value pairs in given range
+     * @return Number of key-value pairs in given range
     */
-    std::vector<std::pair<long, long>> scan(long key1, long key2); 
+    int scan(std::vector<std::pair<long, long>> &result, long key1, long key2); 
 
     /**
      * Close the database
