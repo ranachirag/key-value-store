@@ -45,7 +45,7 @@ void Storage::create_SST(std::string filename) {
   SSTs.emplace_back(sst_to_add);
 }
 
-void Storage::add_to_storage(std::vector<std::pair<long, long>> &data) {
+void Storage::add_to_storage(std::vector<std::pair<long, long> > &data) {
   std::string filename = get_SST_filename();
   std::string filepath = get_SST_filepath(filename);
   
@@ -74,7 +74,7 @@ long Storage::get_value(long key, bool &val_found) {
   return -1;
 }
 
-int Storage::scan_storage(std::vector<std::pair<long, long>> &result,long key1, long key2) {
+int Storage::scan_storage(std::vector<std::pair<long, long> > &result,long key1, long key2) {
   int scan_size;
   for (auto it = SSTs.rbegin(); it != SSTs.rend(); ++it){
     SST *sst = *it;

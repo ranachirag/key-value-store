@@ -19,7 +19,7 @@ namespace file_utils {
    * 
    * @return All key value pairs in the specified block
    */
-  std::vector<std::pair<long, long>> read_block(std::string filepath, long block_num);
+  std::vector<std::pair<long, long> > read_block(std::string filepath, long block_num);
 
   /**
    * Write data to a binary file (in units of blocks).
@@ -65,5 +65,5 @@ namespace search_utils {
    * 
    * @return Index of the key-value pair that matches search key, -1 if not found
    */
-  long binary_search_kv(std::vector<std::pair<long, long>> key_values, long key);
+  long binary_search_kv(std::vector<std::pair<long, long> > key_values, long key);
 }

@@ -18,7 +18,7 @@ int main() {
   }
 
   // long val = kv_store->get(578);
-  std::vector<std::pair<long, long>> result;
+  std::vector<std::pair<long, long> > result;
   int result_size = kv_store->scan(result, 750, 950);
   std::cout << "HERE: " << result_size << std::endl;
   for (std::pair<long, long> pair : result) {
@@ -37,7 +37,7 @@ int main() {
   }
 
   // long val = kv_store->get(578);
-  std::vector<std::pair<long, long>> result2;
+  std::vector<std::pair<long, long> > result2;
   result_size = kv_store->scan(result2, 750, 9500);
   for (std::pair<long, long> pair : result2) {
       std::cout << pair.first << " " << pair.second << std::endl;

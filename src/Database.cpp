@@ -75,7 +75,7 @@ void Database::put(long key, long value) {
   }
 
   if((sizeof(key) + memtable->size) > memtable_size) {
-    std::vector<std::pair<long, long>> lst;
+    std::vector<std::pair<long, long> > lst;
     int lst_size = memtable->range_search(lst, memtable->min_key, memtable->max_key);
     storage->add_to_storage(lst);
     memtable->reset_tree();
@@ -111,7 +111,7 @@ long Database::get(long key) {
   
 }
 
-int Database::scan(std::vector<std::pair<long, long>> &result, long key1, long key2) {
+int Database::scan(std::vector<std::pair<long, long> > &result, long key1, long key2) {
   
   // Range search Main Memory
   int kv_range_mem_size = memtable->range_search(result, key1, key2);
@@ -125,7 +125,7 @@ int Database::scan(std::vector<std::pair<long, long>> &result, long key1, long k
 void Database::close() {
   if(db_open) {
     if(memtable->size > 0) {
-      std::vector<std::pair<long, long>> lst;
+      std::vector<std::pair<long, long> > lst;
       int lst_size = memtable->range_search(lst, memtable->min_key, memtable->max_key);
       storage->add_to_storage(lst);
     }

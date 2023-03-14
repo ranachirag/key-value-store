@@ -49,7 +49,7 @@ class AVL_Tree {
      * 
      * @return Number of key-value pairs found in range scan
     */
-    int range_search(std::vector<std::pair<long, long>> &result, long key1, long key2);
+    int range_search(std::vector<std::pair<long, long> > &result, long key1, long key2);
 
     /**
      * Reset the tree such that it is empty
@@ -114,7 +114,7 @@ class AVL_Tree {
      * @param key1 Start key of range
      * @param key2 End key of range
     */
-    int range_search_nodes(std::vector<std::pair<long, long>> &result, Node *root_node, long key1, long key2);
+    int range_search_nodes(std::vector<std::pair<long, long> > &result, Node *root_node, long key1, long key2);
 
     /**
      * Delete all nodes in the tree, recursive
