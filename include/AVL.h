@@ -76,6 +76,11 @@ class AVL_Tree {
     */
     long max_key;
 
+    /** 
+     * Get root node
+    */
+    Node *get_root();
+
   private:
     /**
      * The root node of the AVL Tree

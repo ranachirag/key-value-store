@@ -226,4 +226,8 @@ void AVL_Tree::reset_tree() {
   size = 0;
 }
 
+Node *AVL_Tree::get_root() {
+  return root;
+}
+
 
