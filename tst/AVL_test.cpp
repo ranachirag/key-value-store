@@ -40,10 +40,15 @@ TEST_F(AVL_TreeTest, resetTreeTest) {
   ASSERT_EQ(root, nullptr);
 }
 
-TEST_F(AVL_TreeTest, insertTest1) {
-  
+TEST_F(AVL_TreeTest, getValueTest) {
   tree.insert(0,0);
-  
+  bool val = false;
+  Node *root = tree.get_root();
+  ASSERT_EQ(tree.get_value(0, val), 0);
+}
+
+TEST_F(AVL_TreeTest, insertTest1) {
+  tree.insert(0,0);
   ASSERT_EQ(tree.min_key, 0);
   ASSERT_EQ(tree.max_key, 0);
 }
@@ -58,6 +63,7 @@ TEST_F(AVL_TreeTest, insertTest2) {
 }
 
 TEST_F(AVL_TreeTest, insertTest3) {
+  // rotate left
   tree.insert(0,0);
   tree.insert(1,1);
   tree.insert(2,2);
@@ -66,3 +72,22 @@ TEST_F(AVL_TreeTest, insertTest3) {
   Node *root = tree.get_root();
   ASSERT_EQ(root->value, 1);
 }
+
+TEST_F(AVL_TreeTest, insertTest4) {
+  // rotate right
+  tree.insert(2,2);
+  tree.insert(1,1);
+  tree.insert(0,0);
+  ASSERT_EQ(tree.min_key, 0);
+  ASSERT_EQ(tree.max_key, 2);
+  Node *root = tree.get_root();
+  ASSERT_EQ(root->value, 1);
+}
+
+// TODO test right left rotation
+
+// TODO test left right rotation
+
+// TODO test print tree
+
+// TODO test range search 
