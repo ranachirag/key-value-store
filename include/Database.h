@@ -49,7 +49,7 @@ class Database {
      * 
      * @return Number of key-value pairs in given range
     */
-    int scan(std::vector<std::pair<long, long>> &result, long key1, long key2); 
+    int scan(std::vector<std::pair<long, long> > &result, long key1, long key2); 
 
     /**
      * Close the database

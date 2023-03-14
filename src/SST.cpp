@@ -29,7 +29,7 @@ long SST::search(long key, bool &val_found) {
   // Binary search on the key-value pairs within the block 
   long found_value = -1;
   if(block_containing_key >= 0) {
-    std::vector<std::pair<long, long>> key_values = file_utils::read_block(filepath, block_containing_key);
+    std::vector<std::pair<long, long> > key_values = file_utils::read_block(filepath, block_containing_key);
 
     long found_index = search_utils::binary_search_kv(key_values, key);
 
@@ -44,7 +44,7 @@ long SST::search(long key, bool &val_found) {
 }
 
 
-int SST::scan(std::vector<std::pair<long, long>> &result, long key1, long key2) {
+int SST::scan(std::vector<std::pair<long, long> > &result, long key1, long key2) {
   int scan_result_size = 0;
   long filesize = file_utils::get_filesize(filepath);
   if(filesize == 0) {
@@ -60,7 +60,7 @@ int SST::scan(std::vector<std::pair<long, long>> &result, long key1, long key2) 
   
   if(block_containing_key >= 0) {
 
-    std::vector<std::pair<long, long>> key_values = file_utils::read_block(filepath, block_containing_key);
+    std::vector<std::pair<long, long> > key_values = file_utils::read_block(filepath, block_containing_key);
 
     // Search every pair in the blocks for the range (starting from the first block that contains the range)
     long block_containing_range = block_containing_key;

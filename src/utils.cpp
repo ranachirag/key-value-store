@@ -23,7 +23,7 @@ long file_utils::get_filesize(std::string filepath) {
 }
 
 
-std::vector<std::pair<long, long>> file_utils::read_block(std::string filepath, long block_num) {
+std::vector<std::pair<long, long> > file_utils::read_block(std::string filepath, long block_num) {
   int fd = open(filepath.c_str(), O_RDONLY | O_CREAT); // Add O_DIRECT Flag
 
   if (fd ==-1) {
@@ -34,7 +34,7 @@ std::vector<std::pair<long, long>> file_utils::read_block(std::string filepath, 
   char buffer[BLOCK_SIZE];
   long bytes_read = pread(fd, buffer, BLOCK_SIZE, offset);
 
-  std::vector<std::pair<long, long>> values (reinterpret_cast<std::pair<long, long>*>(buffer), 
+  std::vector<std::pair<long, long> > values (reinterpret_cast<std::pair<long, long>*>(buffer), 
                                              reinterpret_cast<std::pair<long, long>*>(buffer + bytes_read));
 
   return values;
@@ -89,7 +89,7 @@ long search_utils::binary_search_blocks(std::string filepath, long num_blocks, l
   long min_key_block;
   long max_key_block;
 
-  std::vector<std::pair<long, long>> values;
+  std::vector<std::pair<long, long> > values;
 
   while (start_block <= end_block) {
     block_to_read = start_block + ((end_block - start_block) / 2);
@@ -117,7 +117,7 @@ long search_utils::binary_search_range_blocks(std::string filepath, long num_blo
   long min_key_block;
   long max_key_block;
 
-  std::vector<std::pair<long, long>> values;
+  std::vector<std::pair<long, long> > values;
 
   while (start_block <= end_block) {
     block_to_read = start_block + ((end_block - start_block) / 2);
@@ -136,7 +136,7 @@ long search_utils::binary_search_range_blocks(std::string filepath, long num_blo
   return -1;
 }
 
-long search_utils::binary_search_kv(std::vector<std::pair<long, long>> key_values, long key) {
+long search_utils::binary_search_kv(std::vector<std::pair<long, long> > key_values, long key) {
   long mid_index;
   long mid_key;
   long start_index = 0;

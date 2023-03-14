@@ -117,185 +117,69 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named kvstore
+# Target rules for targets named kvstore_run
 
 # Build rule for target.
-kvstore: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 kvstore
-.PHONY : kvstore
+kvstore_run: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 kvstore_run
+.PHONY : kvstore_run
 
 # fast build rule for target.
-kvstore/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/build
-.PHONY : kvstore/fast
+kvstore_run/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/kvstore_run.dir/build.make src/CMakeFiles/kvstore_run.dir/build
+.PHONY : kvstore_run/fast
 
-main.o: main.cpp.o
-.PHONY : main.o
+#=============================================================================
+# Target rules for targets named kvstore_lib
 
-# target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/main.cpp.o
-.PHONY : main.cpp.o
+# Build rule for target.
+kvstore_lib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 kvstore_lib
+.PHONY : kvstore_lib
 
-main.i: main.cpp.i
-.PHONY : main.i
+# fast build rule for target.
+kvstore_lib/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/kvstore_lib.dir/build.make src/CMakeFiles/kvstore_lib.dir/build
+.PHONY : kvstore_lib/fast
 
-# target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/main.cpp.i
-.PHONY : main.cpp.i
+#=============================================================================
+# Target rules for targets named kvstore_tst
 
-main.s: main.cpp.s
-.PHONY : main.s
+# Build rule for target.
+kvstore_tst: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 kvstore_tst
+.PHONY : kvstore_tst
 
-# target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/main.cpp.s
-.PHONY : main.cpp.s
+# fast build rule for target.
+kvstore_tst/fast:
+	$(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/build
+.PHONY : kvstore_tst/fast
 
-src/AVL.o: src/AVL.cpp.o
-.PHONY : src/AVL.o
+#=============================================================================
+# Target rules for targets named gtest
 
-# target to build an object file
-src/AVL.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/AVL.cpp.o
-.PHONY : src/AVL.cpp.o
+# Build rule for target.
+gtest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest
+.PHONY : gtest
 
-src/AVL.i: src/AVL.cpp.i
-.PHONY : src/AVL.i
+# fast build rule for target.
+gtest/fast:
+	$(MAKE) $(MAKESILENT) -f lib/googletest/CMakeFiles/gtest.dir/build.make lib/googletest/CMakeFiles/gtest.dir/build
+.PHONY : gtest/fast
 
-# target to preprocess a source file
-src/AVL.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/AVL.cpp.i
-.PHONY : src/AVL.cpp.i
+#=============================================================================
+# Target rules for targets named gtest_main
 
-src/AVL.s: src/AVL.cpp.s
-.PHONY : src/AVL.s
+# Build rule for target.
+gtest_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest_main
+.PHONY : gtest_main
 
-# target to generate assembly for a file
-src/AVL.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/AVL.cpp.s
-.PHONY : src/AVL.cpp.s
-
-src/Database.o: src/Database.cpp.o
-.PHONY : src/Database.o
-
-# target to build an object file
-src/Database.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Database.cpp.o
-.PHONY : src/Database.cpp.o
-
-src/Database.i: src/Database.cpp.i
-.PHONY : src/Database.i
-
-# target to preprocess a source file
-src/Database.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Database.cpp.i
-.PHONY : src/Database.cpp.i
-
-src/Database.s: src/Database.cpp.s
-.PHONY : src/Database.s
-
-# target to generate assembly for a file
-src/Database.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Database.cpp.s
-.PHONY : src/Database.cpp.s
-
-src/Node.o: src/Node.cpp.o
-.PHONY : src/Node.o
-
-# target to build an object file
-src/Node.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Node.cpp.o
-.PHONY : src/Node.cpp.o
-
-src/Node.i: src/Node.cpp.i
-.PHONY : src/Node.i
-
-# target to preprocess a source file
-src/Node.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Node.cpp.i
-.PHONY : src/Node.cpp.i
-
-src/Node.s: src/Node.cpp.s
-.PHONY : src/Node.s
-
-# target to generate assembly for a file
-src/Node.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Node.cpp.s
-.PHONY : src/Node.cpp.s
-
-src/SST.o: src/SST.cpp.o
-.PHONY : src/SST.o
-
-# target to build an object file
-src/SST.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/SST.cpp.o
-.PHONY : src/SST.cpp.o
-
-src/SST.i: src/SST.cpp.i
-.PHONY : src/SST.i
-
-# target to preprocess a source file
-src/SST.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/SST.cpp.i
-.PHONY : src/SST.cpp.i
-
-src/SST.s: src/SST.cpp.s
-.PHONY : src/SST.s
-
-# target to generate assembly for a file
-src/SST.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/SST.cpp.s
-.PHONY : src/SST.cpp.s
-
-src/Storage.o: src/Storage.cpp.o
-.PHONY : src/Storage.o
-
-# target to build an object file
-src/Storage.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Storage.cpp.o
-.PHONY : src/Storage.cpp.o
-
-src/Storage.i: src/Storage.cpp.i
-.PHONY : src/Storage.i
-
-# target to preprocess a source file
-src/Storage.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Storage.cpp.i
-.PHONY : src/Storage.cpp.i
-
-src/Storage.s: src/Storage.cpp.s
-.PHONY : src/Storage.s
-
-# target to generate assembly for a file
-src/Storage.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/Storage.cpp.s
-.PHONY : src/Storage.cpp.s
-
-src/utils.o: src/utils.cpp.o
-.PHONY : src/utils.o
-
-# target to build an object file
-src/utils.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/utils.cpp.o
-.PHONY : src/utils.cpp.o
-
-src/utils.i: src/utils.cpp.i
-.PHONY : src/utils.i
-
-# target to preprocess a source file
-src/utils.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/utils.cpp.i
-.PHONY : src/utils.cpp.i
-
-src/utils.s: src/utils.cpp.s
-.PHONY : src/utils.s
-
-# target to generate assembly for a file
-src/utils.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/utils.cpp.s
-.PHONY : src/utils.cpp.s
+# fast build rule for target.
+gtest_main/fast:
+	$(MAKE) $(MAKESILENT) -f lib/googletest/CMakeFiles/gtest_main.dir/build.make lib/googletest/CMakeFiles/gtest_main.dir/build
+.PHONY : gtest_main/fast
 
 # Help Target
 help:
@@ -305,28 +189,11 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... kvstore"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
-	@echo "... src/AVL.o"
-	@echo "... src/AVL.i"
-	@echo "... src/AVL.s"
-	@echo "... src/Database.o"
-	@echo "... src/Database.i"
-	@echo "... src/Database.s"
-	@echo "... src/Node.o"
-	@echo "... src/Node.i"
-	@echo "... src/Node.s"
-	@echo "... src/SST.o"
-	@echo "... src/SST.i"
-	@echo "... src/SST.s"
-	@echo "... src/Storage.o"
-	@echo "... src/Storage.i"
-	@echo "... src/Storage.s"
-	@echo "... src/utils.o"
-	@echo "... src/utils.i"
-	@echo "... src/utils.s"
+	@echo "... gtest"
+	@echo "... gtest_main"
+	@echo "... kvstore_lib"
+	@echo "... kvstore_run"
+	@echo "... kvstore_tst"
 .PHONY : help
 
 

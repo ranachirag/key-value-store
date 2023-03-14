@@ -187,7 +187,7 @@ void AVL_Tree::print_tree() {
   printTree(root, "", false);
 }
 
-int AVL_Tree::range_search_nodes(std::vector<std::pair<long, long>> &result, Node *root_node, long key1, long key2) {
+int AVL_Tree::range_search_nodes(std::vector<std::pair<long, long> > &result, Node *root_node, long key1, long key2) {
   if (root_node == NULL) {
     return 0;
   }
@@ -207,7 +207,7 @@ int AVL_Tree::range_search_nodes(std::vector<std::pair<long, long>> &result, Nod
 
     int l_results = range_search_nodes(result, root_node->l, key1, root_node->key);
 
-    std::pair<long, long> root_pair{root_node->key, root_node->value};
+    std::pair<long, long> root_pair (root_node->key, root_node->value);
     result.push_back(root_pair);
 
     int r_results = range_search_nodes(result, root_node->r, root_node->key, key2);
@@ -216,7 +216,7 @@ int AVL_Tree::range_search_nodes(std::vector<std::pair<long, long>> &result, Nod
   return result.size();
 }
 
-int AVL_Tree::range_search(std::vector<std::pair<long, long>> &result, long key1, long key2) {
+int AVL_Tree::range_search(std::vector<std::pair<long, long> > &result, long key1, long key2) {
   int prev_size = result.size();
   return range_search_nodes(result, root, key1, key2) - prev_size;
 }
