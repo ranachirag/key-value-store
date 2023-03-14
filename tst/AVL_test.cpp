@@ -11,17 +11,15 @@
 #include <vector>
 #include <string>
 
-class AVL_test : public ::testing::Test{
-
-  public:
-    std::unique_ptr<AVL_Tree> tree;
-    AVL_test() {
-      AVL_Tree tree;
-  }
+class AVL_TreeTest : public ::testing::Test{
+  protected:
+    AVL_Tree tree;
 };
 
-TEST_F(AVL_test, insertTest1) {
-  tree->insert(0,0);
-  EXPECT_EQ(tree->min_key, 0);
-  EXPECT_EQ(tree->max_key, 0);
+TEST_F(AVL_TreeTest, insertTest1) {
+  
+  tree.insert(0,0);
+  
+  EXPECT_EQ(tree.min_key, 0);
+  EXPECT_EQ(tree.max_key, 0);
 }
