@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.24.2/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/jhanvi/ECE568/CSC443-project
+CMAKE_SOURCE_DIR = /Users/chiragrana/projects/CSC443/CSC443-project
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/jhanvi/ECE568/CSC443-project
+CMAKE_BINARY_DIR = /Users/chiragrana/projects/CSC443/CSC443-project
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/jhanvi/ECE568/CSC443-project && $(CMAKE_COMMAND) -E cmake_progress_start /Users/jhanvi/ECE568/CSC443-project/CMakeFiles /Users/jhanvi/ECE568/CSC443-project/tst//CMakeFiles/progress.marks
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/jhanvi/ECE568/CSC443-project/CMakeFiles 0
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(CMAKE_COMMAND) -E cmake_progress_start /Users/chiragrana/projects/CSC443/CSC443-project/CMakeFiles /Users/chiragrana/projects/CSC443/CSC443-project/tst//CMakeFiles/progress.marks
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiragrana/projects/CSC443/CSC443-project/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/clean
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/preinstall
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/preinstall
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 tst/CMakeFiles/kvstore_tst.dir/rule:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/CMakeFiles/kvstore_tst.dir/rule
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tst/CMakeFiles/kvstore_tst.dir/rule
 .PHONY : tst/CMakeFiles/kvstore_tst.dir/rule
 
 # Convenience name for target.
@@ -127,7 +127,7 @@ kvstore_tst: tst/CMakeFiles/kvstore_tst.dir/rule
 
 # fast build rule for target.
 kvstore_tst/fast:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/build
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/build
 .PHONY : kvstore_tst/fast
 
 AVL_test.o: AVL_test.cpp.o
@@ -135,7 +135,7 @@ AVL_test.o: AVL_test.cpp.o
 
 # target to build an object file
 AVL_test.cpp.o:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/AVL_test.cpp.o
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/AVL_test.cpp.o
 .PHONY : AVL_test.cpp.o
 
 AVL_test.i: AVL_test.cpp.i
@@ -143,7 +143,7 @@ AVL_test.i: AVL_test.cpp.i
 
 # target to preprocess a source file
 AVL_test.cpp.i:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/AVL_test.cpp.i
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/AVL_test.cpp.i
 .PHONY : AVL_test.cpp.i
 
 AVL_test.s: AVL_test.cpp.s
@@ -151,39 +151,15 @@ AVL_test.s: AVL_test.cpp.s
 
 # target to generate assembly for a file
 AVL_test.cpp.s:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/AVL_test.cpp.s
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/AVL_test.cpp.s
 .PHONY : AVL_test.cpp.s
-
-CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.o: CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o
-.PHONY : CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.o
-
-# target to build an object file
-CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o
-.PHONY : CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o
-
-CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.i: CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.i
-.PHONY : CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.i
-
-# target to preprocess a source file
-CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.i:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.i
-.PHONY : CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.i
-
-CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.s: CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.s
-.PHONY : CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.s
-
-# target to generate assembly for a file
-CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.s:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.s
-.PHONY : CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.s
 
 main.o: main.cpp.o
 .PHONY : main.o
 
 # target to build an object file
 main.cpp.o:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/main.cpp.o
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -191,7 +167,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/main.cpp.i
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -199,7 +175,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/main.cpp.s
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(MAKE) $(MAKESILENT) -f tst/CMakeFiles/kvstore_tst.dir/build.make tst/CMakeFiles/kvstore_tst.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -214,9 +190,6 @@ help:
 	@echo "... AVL_test.o"
 	@echo "... AVL_test.i"
 	@echo "... AVL_test.s"
-	@echo "... CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.o"
-	@echo "... CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.i"
-	@echo "... CMakeFiles/3.24.2/CompilerIdCXX/CMakeCXXCompilerId.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
@@ -231,6 +204,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/jhanvi/ECE568/CSC443-project && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/chiragrana/projects/CSC443/CSC443-project && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

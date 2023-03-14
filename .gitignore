@@ -42,3 +42,4 @@ SST_*
 
 html/*
 latex/*
+build/
