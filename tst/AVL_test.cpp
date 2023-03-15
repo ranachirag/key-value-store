@@ -86,6 +86,31 @@ TEST_F(AVL_TreeTest, insertTest4) {
 
 // TODO test right left rotation
 
+TEST_F(AVL_TreeTest, insertTest5) {
+  tree.insert(5,5);
+  tree.insert(2,2);
+  ASSERT_EQ(tree.min_key, 2);
+  ASSERT_EQ(tree.max_key, 5);
+  tree.insert(7,7);
+  tree.insert(1,1);
+  tree.insert(4,4);
+  tree.insert(6,6);
+  tree.insert(9,9);
+  tree.insert(3,3);
+  tree.insert(16,16);
+  Node *root = tree.get_root();
+  ASSERT_EQ(root->r->r->value, 9);
+  tree.insert(15, 15);
+  ASSERT_EQ(tree.min_key, 1);
+  ASSERT_EQ(tree.max_key, 16);
+  ASSERT_EQ(root->value, 5);
+  ASSERT_EQ(root->r->r->value, 15);
+  ASSERT_EQ(root->r->r->r->value, 16);
+  ASSERT_EQ(root->r->r->l->value, 9);
+}
+
+
+
 // TODO test left right rotation
 
 // TODO test print tree
