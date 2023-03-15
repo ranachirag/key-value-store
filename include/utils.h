@@ -67,3 +67,7 @@ namespace search_utils {
    */
   long binary_search_kv(std::vector<std::pair<long, long> > key_values, long key);
 }
+
+namespace hash_utils {
+  int get_hash_value(std::string hash_key);
+}

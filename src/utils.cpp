@@ -156,3 +156,8 @@ long search_utils::binary_search_kv(std::vector<std::pair<long, long> > key_valu
   }
   return -1;
 }
+
+
+int hash_utils::get_hash_value(std::string hash_key) {
+
+}
