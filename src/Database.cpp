@@ -112,6 +112,10 @@ long Database::get(long key) {
 }
 
 int Database::scan(std::vector<std::pair<long, long> > &result, long key1, long key2) {
+  if(!db_open) {
+    perror("Please open a database first");
+    return -1;
+  }
   
   // Range search Main Memory
   int kv_range_mem_size = memtable->range_search(result, key1, key2);
