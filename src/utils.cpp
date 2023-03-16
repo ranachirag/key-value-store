@@ -170,3 +170,14 @@ int math_utils::get_num_bits(int value) {
   }
   return floor(log2(value)) + 1;
 }
+
+int math_utils::get_first_n_bits(int value, int num_bits) {
+  int val_num_bits = math_utils::get_num_bits(value);
+  if(val_num_bits >= num_bits) {
+    int diff = val_num_bits - num_bits;
+    return value >> diff;
+  } else {
+    int diff = num_bits - val_num_bits;
+    return value << diff;
+  }
+}

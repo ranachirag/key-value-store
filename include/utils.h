@@ -89,4 +89,14 @@ namespace math_utils {
    * @return Number of bits it takes to represent a given 32-bit integer 
   */
   int get_num_bits(int value);
+
+  /**
+   * Get the first n bits from a given 32-bit integer
+   * 
+   * @param value 32-bit integer
+   * @param num_bits Number for prefix bits to retreive
+   * 
+   * @return First n bits from a given 32-bit integer
+   */
+  int get_first_n_bits(int value, int num_bits);
 }
