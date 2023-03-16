@@ -74,7 +74,19 @@ namespace hash_utils {
    * 
    * @param hash_key Key to hash
    * @param seed Seed used for xxHash function
+   * 
    * @return Hash Value
    */
   int get_hash_value(std::string hash_key, int seed);
+}
+
+namespace math_utils {
+  /**
+   * Get the number of bits it takes to represent a given 32-bit integer 
+   * 
+   * @param value 32-bit integer 
+   * 
+   * @return Number of bits it takes to represent a given 32-bit integer 
+  */
+  int get_num_bits(int value);
 }

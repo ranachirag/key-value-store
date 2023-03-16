@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <cmath>
 
 #include <sys/stat.h>
 #include "xxhash.h"
@@ -160,5 +161,12 @@ long search_utils::binary_search_kv(std::vector<std::pair<long, long> > key_valu
 
 
 int hash_utils::get_hash_value(std::string hash_key, int seed) {
-  return XXH32(hash_key.c_str(), hash_key.length(), seed);;
+  return XXH32(hash_key.c_str(), hash_key.length(), seed);
+}
+
+int math_utils::get_num_bits(int value) {
+  if (value == 0) {
+    return 1;
+  }
+  return floor(log2(value)) + 1;
 }

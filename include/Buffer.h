@@ -3,18 +3,18 @@
 
 #include <string>
 
-class FrameNode {
+class Frame {
 
 };
 
 struct dir_entry {
-  FrameNode *frames;
+  Frame *frames;
   int frame_count;
 };
 
-class Directory {
+class Buffer {
   public:
-    Directory(int intial_size, int max_size);
+    Buffer(int intial_size, int max_size);
     int insert_data(std::string hash_key, void *data, int data_size);
     int get_data(void * &data, std::string hash_key);
   private:
@@ -22,8 +22,8 @@ class Directory {
     int dir_size;
     int max_dir_size;
     dir_entry *directory;
-    int get_hash_value(std::string hash_key);
     int get_offset(int hash_value);
+    int update_dir_size(int new_size);
 };
 
 #endif
