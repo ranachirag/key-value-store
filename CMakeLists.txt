@@ -1,4 +1,4 @@
-if(LINUX) 
+if(UNIX AND NOT APPLE)
   cmake_minimum_required(VERSION 3.16)
 else()
   cmake_minimum_required(VERSION 3.24)

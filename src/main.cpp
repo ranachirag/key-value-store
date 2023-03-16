@@ -54,6 +54,6 @@ int main() {
   //               });
 
   std::string hash_key = "test";
-  int hash_val = hash_utils::get_hash_value(hash_key);
+  int hash_val = hash_utils::get_hash_value(hash_key, 443);
   std::cout << hash_val << std::endl;
 }

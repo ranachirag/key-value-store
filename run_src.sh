@@ -1,4 +1,4 @@
 #!/bin/bash
 
 ( cd ./build ; make all )
-./build/src/kvstore_tst
+./build/src/kvstore_run

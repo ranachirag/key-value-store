@@ -69,5 +69,12 @@ namespace search_utils {
 }
 
 namespace hash_utils {
-  int get_hash_value(std::string hash_key);
+  /**
+   * Get a 32 bit hash value from a provided string (hash key)
+   * 
+   * @param hash_key Key to hash
+   * @param seed Seed used for xxHash function
+   * @return Hash Value
+   */
+  int get_hash_value(std::string hash_key, int seed);
 }

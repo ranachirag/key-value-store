@@ -159,11 +159,6 @@ long search_utils::binary_search_kv(std::vector<std::pair<long, long> > key_valu
 }
 
 
-int hash_utils::get_hash_value(std::string hash_key) {
-  int seed = 443;
-
-  long hash = XXH64(hash_key.c_str(), hash_key.length(), seed);
-
-  std::cout << "hash = " << hash << std::endl;
-  return 0;
+int hash_utils::get_hash_value(std::string hash_key, int seed) {
+  return XXH32(hash_key.c_str(), hash_key.length(), seed);;
 }
