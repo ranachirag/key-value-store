@@ -34,36 +34,36 @@ void Database::open(std::string db_name) {
   const char *db_name_chr = db_name.c_str();
 
   if (stat(db_name_chr, &dir_info) == 0 && (dir_info.st_mode & S_IFDIR) != 0) {
-        // Dir exists, read SSTs
+    // Dir exists, read SSTs
 
-        std::vector<std::string> sst_files;
+    std::vector<std::string> sst_files;
 
-        DIR* dir = opendir(db_name_chr);
-        if (dir == NULL) {
-            perror("Couldn't open directory");
-            return;
-        }
-        dirent* dir_file;
-        while ((dir_file = readdir(dir)) != NULL) { 
-            if (dir_file->d_type == DT_REG) {  
-                sst_files.push_back(dir_file->d_name);
-            }
-        }
-        closedir(dir);
-
-        std::sort(sst_files.begin(), sst_files.end(), sst_filename_compare);
-
-        storage = new Storage(name, sst_files);
-
-    } else {
-        // Dir doesn't exist, create dir
-        if (mkdir(db_name_chr, 0777) != 0) {
-          perror("Couldn't create directory");
-          return;
-        } else {
-          storage = new Storage(name);
+    DIR* dir = opendir(db_name_chr);
+    if (dir == NULL) {
+        perror("Couldn't open directory");
+        return;
+    }
+    dirent* dir_file;
+    while ((dir_file = readdir(dir)) != NULL) { 
+        if (dir_file->d_type == DT_REG) {  
+            sst_files.push_back(dir_file->d_name);
         }
     }
+    closedir(dir);
+
+    std::sort(sst_files.begin(), sst_files.end(), sst_filename_compare);
+
+    storage = new Storage(name, sst_files);
+
+  } else {
+    // Dir doesn't exist, create dir
+    if (mkdir(db_name_chr, 0777) != 0) {
+      perror("Couldn't create directory");
+      return;
+    } else {
+      storage = new Storage(name);
+    }
+  }
 
   memtable = new AVL_Tree();
 }
