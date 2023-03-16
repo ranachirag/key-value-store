@@ -55,7 +55,7 @@ TEST_F(Database_test, putGetTest) {
 TEST_F(Database_test, scanTest) {
   db = new Database(100);
   db->open("testscan");
-  ASSERT_EQ(db->get(0, -1);
+  ASSERT_EQ(db->get(0), -1);
   db->put(0,0);
   db->put(1,1);
   db->put(2,2);
