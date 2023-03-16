@@ -7,6 +7,7 @@
 #include <utility>
 
 #include <sys/stat.h>
+#include "xxhash.h"
 
 #include "utils.h"
 #include "SST.h"
@@ -159,5 +160,11 @@ long search_utils::binary_search_kv(std::vector<std::pair<long, long> > key_valu
 
 
 int hash_utils::get_hash_value(std::string hash_key) {
+  const char* key = "hello world";
+  uint32_t seed = 0;
+  uint32_t hash = 0;
 
+  // MurmurHash3_x86_32(key, strlen(key), seed, &hash);
+
+  // std::cout << "hash = " << hash << std::endl;
 }
