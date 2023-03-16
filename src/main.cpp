@@ -53,5 +53,7 @@ int main() {
   //                   std::cout << "Key: " << e.first << " Value: " << e.second << std::endl;
   //               });
 
-  
+  std::string hash_key = "test";
+  int hash_val = hash_utils::get_hash_value(hash_key);
+  std::cout << hash_val << std::endl;
 }

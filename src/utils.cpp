@@ -160,11 +160,10 @@ long search_utils::binary_search_kv(std::vector<std::pair<long, long> > key_valu
 
 
 int hash_utils::get_hash_value(std::string hash_key) {
-  const char* key = "hello world";
-  uint32_t seed = 0;
-  uint32_t hash = 0;
+  int seed = 443;
 
-  // MurmurHash3_x86_32(key, strlen(key), seed, &hash);
+  long hash = XXH64(hash_key.c_str(), hash_key.length(), seed);
 
-  // std::cout << "hash = " << hash << std::endl;
+  std::cout << "hash = " << hash << std::endl;
+  return 0;
 }

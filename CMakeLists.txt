@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.24)
+if(LINUX) 
+  cmake_minimum_required(VERSION 3.16)
+else()
+  cmake_minimum_required(VERSION 3.24)
+endif()
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
