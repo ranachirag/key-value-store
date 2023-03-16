@@ -224,6 +224,8 @@ int AVL_Tree::range_search(std::vector<std::pair<long, long> > &result, long key
 void AVL_Tree::reset_tree() {
   reset_tree_nodes(root);
   size = 0;
+  min_key = std::numeric_limits<long>::infinity();
+  max_key = -std::numeric_limits<long>::infinity();
 }
 
 Node *AVL_Tree::get_root() {
