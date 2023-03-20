@@ -83,12 +83,13 @@ namespace hash_utils {
 namespace math_utils {
   /**
    * Get the number of bits it takes to represent a given 32-bit integer 
+   * Note: Assumes value is 0-indexed, calculates number of bits takes to represent value-1
    * 
    * @param value 32-bit integer 
    * 
    * @return Number of bits it takes to represent a given 32-bit integer 
   */
-  int get_num_bits(int value);
+  int get_num_bits(unsigned int value);
 
   /**
    * Get the first n bits from a given 32-bit integer
@@ -98,5 +99,5 @@ namespace math_utils {
    * 
    * @return First n bits from a given 32-bit integer
    */
-  int get_first_n_bits(int value, int num_bits);
+  int get_prefix_bits(unsigned int value, unsigned int num_bits);
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include "utils.h"
+#include "BufferPool.h"
 
 int main() {
   // Memtable memtable = new Memtable(5);
@@ -53,7 +54,41 @@ int main() {
   //                   std::cout << "Key: " << e.first << " Value: " << e.second << std::endl;
   //               });
 
-  std::string hash_key = "test";
-  int hash_val = hash_utils::get_hash_value(hash_key, 443);
-  std::cout << hash_val << std::endl;
+  // std::string hash_key = "test";
+  // int hash_val = hash_utils::get_hash_value(hash_key, 443);
+  // std::cout << hash_val << std::endl;
+
+  
+  
+  BufferPool *buf_pool = new BufferPool(4, 128);
+  // std::string* test_data = new std::string("Hello, World!");
+  // buf_pool->insert_data(hash_key, (void *)test_data);
+
+  // void* data = nullptr;
+  // int found = buf_pool->get_data(data, hash_key);
+
+  // std::string *found_val = (std::string *) data;
+  // std::cout << found << std::endl;
+  // std::cout << *found_val << std::endl;
+
+  for(int i = 0; i < 50; ++i) {
+    std::string hash_key = "hash_key" + std::to_string(i);
+    std::string* test_data = new std::string("Hello, World!" + std::to_string(i));
+    buf_pool->insert_data(hash_key, (void *)test_data);
+  }
+  buf_pool->print_bufpool();
+
+  for(int i = 0; i < 50; ++i) {
+    void* data = nullptr;
+    std::string hash_key = "hash_key" + std::to_string(i);
+    int found = buf_pool->get_data(data, hash_key);
+
+    std::string *found_val = (std::string *) data;
+    // std::cout << found << std::endl;
+    std::cout << *found_val << std::endl;
+  }
+  buf_pool->print_bufpool();
+
+
+
 }

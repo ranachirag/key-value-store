@@ -164,20 +164,19 @@ int hash_utils::get_hash_value(std::string hash_key, int seed) {
   return XXH32(hash_key.c_str(), hash_key.length(), seed);
 }
 
-int math_utils::get_num_bits(int value) {
+int math_utils::get_num_bits(unsigned int value) {
   if (value == 0) {
     return 1;
   }
-  return floor(log2(value)) + 1;
+  return floor(log2(value-1)) + 1;
 }
 
-int math_utils::get_first_n_bits(int value, int num_bits) {
-  int val_num_bits = math_utils::get_num_bits(value);
-  if(val_num_bits >= num_bits) {
-    int diff = val_num_bits - num_bits;
-    return value >> diff;
-  } else {
-    int diff = num_bits - val_num_bits;
-    return value << diff;
+int math_utils::get_prefix_bits(unsigned int value, unsigned int num_bits) {
+  unsigned int val_num_bits = 32; // using 32 bit hash values
+  if(val_num_bits > num_bits) {
+    unsigned int diff = val_num_bits - num_bits;
+    unsigned int mask = ((1 << num_bits) - 1);
+    return (value >> diff) & mask;
   }
+  return value;
 }
