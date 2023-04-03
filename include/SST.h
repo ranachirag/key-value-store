@@ -3,7 +3,7 @@
 
 #include <string>
 
-#define BLOCK_SIZE 4096
+#include "DatabaseMacros.h"
 
 class SST {
   private:

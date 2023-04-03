@@ -1,0 +1,8 @@
+#ifndef DATABASE_MACROS_H
+#define DATABASE_MACROS_H
+
+#define BLOCK_SIZE 4096
+#define HASH_FUNC_SEED 443
+#define LOAD_FACTOR 1
+
+#endif
