@@ -31,7 +31,17 @@ class Database_test : public ::testing::Test{
 };
 
 TEST_F(Database_test, opentest) {
-  db = new Database(100);
+  BufferPoolOptions buf_options;
+  buf_options.initial_size = 2;
+  buf_options.max_size = 4;
+
+  DatabaseOptions db_options;
+  db_options.use_buffer_pool = true;
+  db_options.buffer_pool_options = buf_options;
+  db_options.memtable_size = 100;
+
+  db = new Database(db_options);
+
   db->open("testdb");
   const char* expected_error_message = "Please close the testdb database first";
   testing::internal::CaptureStderr();
@@ -44,7 +54,17 @@ TEST_F(Database_test, opentest) {
 }
 
 TEST_F(Database_test, putGetTest) {
-  db = new Database(100);
+  BufferPoolOptions buf_options;
+  buf_options.initial_size = 2;
+  buf_options.max_size = 4;
+
+  DatabaseOptions db_options;
+  db_options.use_buffer_pool = true;
+  db_options.buffer_pool_options = buf_options;
+  db_options.memtable_size = 100;
+
+  db = new Database(db_options);
+
   db->open("testputget");
   db->put(0,0);
   ASSERT_EQ(db->get(0), 0);
@@ -53,7 +73,17 @@ TEST_F(Database_test, putGetTest) {
 }
 
 TEST_F(Database_test, scanTest) {
-  db = new Database(100);
+  BufferPoolOptions buf_options;
+  buf_options.initial_size = 2;
+  buf_options.max_size = 4;
+
+  DatabaseOptions db_options;
+  db_options.use_buffer_pool = true;
+  db_options.buffer_pool_options = buf_options;
+  db_options.memtable_size = 100;
+
+  db = new Database(db_options);
+  
   db->open("testscan");
   ASSERT_EQ(db->get(0), -1);
   db->put(0,0);

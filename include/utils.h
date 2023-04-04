@@ -1,6 +1,11 @@
 #include <string>
 #include <vector>
 
+#include "Frame.h"
+#include "Bucket.h"
+#include "BufferPool.h"
+#include "DatabaseMacros.h"
+
 namespace file_utils {
   /**
    * Get the file size of a given file
@@ -11,15 +16,30 @@ namespace file_utils {
   */
   long get_filesize(std::string filepath);
 
+  std::vector<std::pair<long, long>> reintrepret_buffer(void *buffer, int bytes_read);
+
   /**
    * Read a single block from a binary file.
    * 
+   * @param buffer Buffer to place the block read from binary file in
    * @param filepath Path of file to read block from
    * @param block_num The index of block to read from (zero-indexed)
    * 
-   * @return All key value pairs in the specified block
+   * @return Number of bytes read from the block
    */
-  std::vector<std::pair<long, long> > read_block(std::string filepath, long block_num);
+  int read_block(void * &buffer, std::string filepath, long block_num);
+
+  /**
+   * Read a single block from a binary file with the support of a buffer pool.
+   * 
+   * @param buffer_pool Buffer pool for quicker access of blocks
+   * @param buffer Buffer to place the block read from binary file in
+   * @param filepath Path of file to read block from
+   * @param block_num The index of block to read from (zero-indexed)
+   * 
+   * @return Number of bytes read from the block
+   */
+  int read_block_buffer_pool(BufferPool *buffer_pool, void * &buffer, std::string filepath, long block_num);
 
   /**
    * Write data to a binary file (in units of blocks).
@@ -100,4 +120,19 @@ namespace math_utils {
    * @return First n bits from a given 32-bit integer
    */
   int get_prefix_bits(unsigned int value, unsigned int num_bits);
+}
+
+namespace buffer_pool_utils {
+  
+  int get_offset(int prefix_length, unsigned int hash_value);
+
+  Bucket *get_bucket(const std::vector<Bucket *> directory, int prefix_length, std::string hash_key);
+
+  int rehash_bucket(std::vector<Bucket *> directory, int directory_size, int prefix_length, Bucket *bucket);
+
+  int insert_frame(Bucket *bucket, Frame *frame_to_insert);
+
+  int delete_frame(std::vector<Bucket *> directory, int directory_size, Bucket *bucket, Frame *frame);
+
+  void find_next_frame(const std::vector<Bucket *> directory, int directory_size, Frame * &frame, int &bucket_num);
 }

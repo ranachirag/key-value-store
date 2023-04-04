@@ -16,8 +16,9 @@ bool sst_filename_compare(std::string file_a, std::string file_b) {
   return file_a_age < file_b_age;
 }
 
-Database::Database (long memtable_size) : memtable_size(memtable_size){
+Database::Database (DatabaseOptions options) : options(options) {
   db_open = false;
+  buffer_pool = nullptr;
 }
 
 void Database::open(std::string db_name) {
@@ -32,6 +33,15 @@ void Database::open(std::string db_name) {
 
   struct stat dir_info;
   const char *db_name_chr = db_name.c_str();
+
+  StorageOptions storage_options;
+  storage_options.db_name = name;
+  storage_options.use_buffer_pool = options.use_buffer_pool;
+  if(options.use_buffer_pool) {
+    buffer_pool = new BufferPool(options.buffer_pool_options);
+    storage_options.buffer_pool = buffer_pool;
+  }
+  storage_options.sst_structure = options.sst_structure;
 
   if (stat(db_name_chr, &dir_info) == 0 && (dir_info.st_mode & S_IFDIR) != 0) {
     // Dir exists, read SSTs
@@ -53,7 +63,7 @@ void Database::open(std::string db_name) {
 
     std::sort(sst_files.begin(), sst_files.end(), sst_filename_compare);
 
-    storage = new Storage(name, sst_files);
+    storage = new Storage(storage_options, sst_files);
 
   } else {
     // Dir doesn't exist, create dir
@@ -61,7 +71,7 @@ void Database::open(std::string db_name) {
       perror("Couldn't create directory");
       return;
     } else {
-      storage = new Storage(name);
+      storage = new Storage(storage_options);
     }
   }
 
@@ -74,7 +84,7 @@ void Database::put(long key, long value) {
     return;
   }
 
-  if((sizeof(key) + memtable->size) > memtable_size) {
+  if((sizeof(key) + memtable->size) > options.memtable_size) {
     std::vector<std::pair<long, long> > lst;
     int lst_size = memtable->range_search(lst, memtable->min_key, memtable->max_key);
     storage->add_to_storage(lst);
@@ -126,6 +136,17 @@ int Database::scan(std::vector<std::pair<long, long> > &result, long key1, long 
   return kv_range_mem_size + kv_range_storage_size;
 }
 
+int Database::update_buffer_pool_size(int new_max_size) {
+  if(db_open && options.use_buffer_pool) {
+    int code = buffer_pool->update_directory_size(new_max_size);
+    if (code == -1) {
+      perror("Unable to update buffer pool size");
+      return -1;
+    }
+  }
+  return 0;
+}
+
 void Database::close() {
   if(db_open) {
     if(memtable->size > 0) {
@@ -135,9 +156,16 @@ void Database::close() {
     }
     memtable->reset_tree();
     storage->reset();
+
+    if(options.use_buffer_pool) {
+      buffer_pool->reset_buffer_pool();
+      delete buffer_pool;
+    }
+    
     
     delete memtable;
     delete storage;
+    
 
     db_open = false;
   }

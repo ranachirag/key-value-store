@@ -7,6 +7,32 @@
 
 #include "AVL.h"
 #include "Storage.h"
+#include "BufferPool.h"
+
+/**
+ * This represents the options to configure the Database
+ */
+struct DatabaseOptions {
+  /**
+   * The maximum size of the memtable
+  */
+  long memtable_size;
+
+  /**
+   * Use a Buffer Pool for storage
+   */
+  bool use_buffer_pool = true;
+
+  /**
+   * Buffer Pool configurations
+   */
+  BufferPoolOptions buffer_pool_options;
+
+  /**
+   * Structure of SST
+   */
+  std::string sst_structure = "LIST"; // TODO: REMOVE ?
+};
 
 /**
  * This class represents a Key Value store database
@@ -17,7 +43,7 @@ class Database {
      * Constructor
      * @param memtable_size The maximum size of the memtable
     */
-    Database (long memtable_size); 
+    Database (DatabaseOptions options); 
 
     /**
      * Open the database for usage
@@ -52,15 +78,19 @@ class Database {
     int scan(std::vector<std::pair<long, long> > &result, long key1, long key2); 
 
     /**
+     * Update maximum size of the buffer pool, if configured.
+     * 
+     * @param new_max_size Updated maximum size of the buffer pool (in units of 4 KB)
+     * @return 0 if successfully updated, -1 otherwise
+     */
+    int update_buffer_pool_size(int new_max_size);
+
+    /**
      * Close the database
     */
     void close(); 
 
   private:
-    /**
-     * The maximum size of the memtable
-    */
-    const long memtable_size;
 
     /**
      * A boolean value indicating whether a database is open or not
@@ -81,6 +111,16 @@ class Database {
      * The maximum size of the memtable
     */
     Storage * storage; 
+
+    /**
+     * Database configurations
+     */
+    DatabaseOptions options;
+
+    /**
+     * Buffer Pool
+     */
+    BufferPool *buffer_pool;
 };
 
 #endif

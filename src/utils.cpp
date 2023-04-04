@@ -14,6 +14,8 @@
 #include "SST.h"
 
 
+// ----------------- File Utils -----------------------
+
 long file_utils::get_filesize(std::string filepath) {
   struct stat file_info;
   if (stat(filepath.c_str(), &file_info) == -1) {
@@ -25,7 +27,16 @@ long file_utils::get_filesize(std::string filepath) {
 }
 
 
-std::vector<std::pair<long, long> > file_utils::read_block(std::string filepath, long block_num) {
+
+std::vector<std::pair<long, long>> file_utils::reintrepret_buffer(void *buffer, int bytes_read) {
+  char *buffer_char = (char *) buffer;
+  std::vector<std::pair<long, long> > values (reinterpret_cast<std::pair<long, long>*>(buffer_char), 
+                                             reinterpret_cast<std::pair<long, long>*>(buffer_char + bytes_read));
+
+  return values;
+}
+
+int file_utils::read_block(void * &buffer, std::string filepath, long block_num) {
   int fd = open(filepath.c_str(), O_RDONLY | O_CREAT); // Add O_DIRECT Flag
 
   if (fd ==-1) {
@@ -33,14 +44,40 @@ std::vector<std::pair<long, long> > file_utils::read_block(std::string filepath,
   }
 
   long offset = block_num * BLOCK_SIZE;
-  char buffer[BLOCK_SIZE];
   long bytes_read = pread(fd, buffer, BLOCK_SIZE, offset);
+                        
+  close(fd);
 
-  std::vector<std::pair<long, long> > values (reinterpret_cast<std::pair<long, long>*>(buffer), 
-                                             reinterpret_cast<std::pair<long, long>*>(buffer + bytes_read));
+  return bytes_read;
+}
 
-  return values;
+int file_utils::read_block_buffer_pool(BufferPool *buffer_pool, void * &buffer, std::string filepath, long block_num) {
+  int fd = open(filepath.c_str(), O_RDONLY | O_CREAT); // Add O_DIRECT Flag
 
+  if (fd ==-1) {
+      perror("Error opening file");
+  }
+
+  std::string hash_key = filepath + "_" + std::to_string(block_num);
+
+  int found = buffer_pool->get_data(hash_key, buffer);
+
+
+  if(found == 0) {
+    close(fd);
+    // TODO: store bytes_read in buffer pool frame? Probably not
+    return BLOCK_SIZE;
+  }
+
+  long offset = block_num * BLOCK_SIZE;
+  long bytes_read = pread(fd, buffer, BLOCK_SIZE, offset);
+  
+
+  buffer_pool->insert_data(hash_key, buffer);
+
+  close(fd);
+
+  return bytes_read;
 }
 
 int file_utils::write_data(std::string filepath, long* data, long data_size) {
@@ -82,6 +119,9 @@ int file_utils::write_data(std::string filepath, long* data, long data_size) {
 }
 
 
+
+// ----------------- Search Utils -----------------------
+
 long search_utils::binary_search_blocks(std::string filepath, long num_blocks, long key) {
 
   long start_block = 0;
@@ -91,11 +131,23 @@ long search_utils::binary_search_blocks(std::string filepath, long num_blocks, l
   long min_key_block;
   long max_key_block;
 
+  void *buffer;
+  int error_code = posix_memalign(&buffer, BLOCK_SIZE, BLOCK_SIZE);
+  if(error_code != 0) {
+    perror("Could not allocate buffer");
+    return -1;
+  }
+  int bytes_read;
+
   std::vector<std::pair<long, long> > values;
+  
 
   while (start_block <= end_block) {
     block_to_read = start_block + ((end_block - start_block) / 2);
-    values = file_utils::read_block(filepath, block_to_read);
+
+    bytes_read = file_utils::read_block(buffer, filepath, block_to_read);
+    values = file_utils::reintrepret_buffer(buffer, bytes_read);
+
     min_key_block = values[0].first;
     max_key_block = values.back().first;
     if (key < min_key_block ) {
@@ -103,10 +155,11 @@ long search_utils::binary_search_blocks(std::string filepath, long num_blocks, l
     } else if (key > max_key_block) {
       start_block = block_to_read + 1;
     } else {
+      free(buffer);
       return block_to_read;
     }
   }
-
+  free(buffer);
   return -1;
 }
 
@@ -119,11 +172,22 @@ long search_utils::binary_search_range_blocks(std::string filepath, long num_blo
   long min_key_block;
   long max_key_block;
 
-  std::vector<std::pair<long, long> > values;
+  void *buffer;
+  int error_code = posix_memalign(&buffer, BLOCK_SIZE, BLOCK_SIZE);
+  if(error_code != 0) {
+    perror("Could not allocate buffer");
+    return -1;
+  }
+  int bytes_read;
 
+  std::vector<std::pair<long, long> > values;
+  
   while (start_block <= end_block) {
     block_to_read = start_block + ((end_block - start_block) / 2);
-    values = file_utils::read_block(filepath, block_to_read);
+    
+    bytes_read = file_utils::read_block(buffer, filepath, block_to_read);
+    values = file_utils::reintrepret_buffer(buffer, bytes_read);
+
     min_key_block = values[0].first;
     max_key_block = values.back().first;
     if (key2 < min_key_block) {
@@ -131,10 +195,11 @@ long search_utils::binary_search_range_blocks(std::string filepath, long num_blo
     } else if (key1 > max_key_block) {
       start_block = block_to_read + 1;
     } else {
+      free(buffer);
       return block_to_read;
     }
   }
-
+  free(buffer);
   return -1;
 }
 
@@ -142,7 +207,7 @@ long search_utils::binary_search_kv(std::vector<std::pair<long, long> > key_valu
   long mid_index;
   long mid_key;
   long start_index = 0;
-  long end_index = key_values.size()-1;
+  long end_index = key_values.size()-1; // TODO: This is a bug, the actually size of key_values maybe smaller, then the binary search won't work 
 
   while (start_index <= end_index) {
     mid_index = start_index + ((end_index - start_index) / 2);
@@ -160,9 +225,16 @@ long search_utils::binary_search_kv(std::vector<std::pair<long, long> > key_valu
 }
 
 
+
+// ----------------- Hash Utils -----------------------
+
 int hash_utils::get_hash_value(std::string hash_key, int seed) {
   return XXH32(hash_key.c_str(), hash_key.length(), seed);
 }
+
+
+
+// ----------------- Math Utils -----------------------
 
 int math_utils::get_num_bits(unsigned int value) {
   if (value == 0) {
@@ -179,4 +251,148 @@ int math_utils::get_prefix_bits(unsigned int value, unsigned int num_bits) {
     return (value >> diff) & mask;
   }
   return value;
+}
+
+
+
+// ----------------- Buffer Pool Utils -----------------------
+
+int buffer_pool_utils::get_offset(int prefix_length, unsigned int hash_value) {
+  return math_utils::get_prefix_bits(hash_value, prefix_length);
+}
+
+Bucket * buffer_pool_utils::get_bucket(const std::vector<Bucket *> directory, int prefix_length, std::string hash_key) {
+  unsigned int hash_value = hash_utils::get_hash_value(hash_key, HASH_FUNC_SEED);
+  unsigned int offset = buffer_pool_utils::get_offset(prefix_length, hash_value);
+  Bucket *bucket = directory[offset];
+  return bucket;
+}
+
+int buffer_pool_utils::insert_frame(Bucket *bucket, Frame *frame_to_insert) {
+  if(bucket->frame_count == 0) {
+    // Empty Bucket, initialize linked list
+    bucket->frame = frame_to_insert;
+    bucket->frame_count++;
+    
+    return 0;
+  } else if(bucket->frame_count > 0) {
+    
+    // Collision, add to end of the list
+    Frame *curr_frame = bucket->frame;
+
+    while(curr_frame->next != nullptr) {
+      if(curr_frame == frame_to_insert) {
+        return -1;
+      }
+      curr_frame = curr_frame->next;
+    }
+    
+    curr_frame->next = frame_to_insert;
+    bucket->frame_count++;
+
+    return 0;
+    
+  }
+  return -1;
+}
+
+int buffer_pool_utils::delete_frame(std::vector<Bucket *> directory, int directory_size, Bucket *bucket, Frame *frame) {
+  Frame *curr_frame = bucket->frame;
+  bool found_frame = false;
+
+  if(curr_frame == frame) {
+    bucket->frame = curr_frame->next;
+    bucket->frame_count--;
+    found_frame = true;
+
+    // Other buckets may be pointing to the same frame
+    Bucket *potential_bucket;
+    for(int i = 0; i < directory_size; ++i) {
+      potential_bucket = directory[i];
+      if(potential_bucket->frame_count > 0 && potential_bucket->frame == frame) {
+        potential_bucket->frame = curr_frame->next;
+        potential_bucket->frame_count--;
+      }
+    }
+  }
+
+  while(curr_frame->next != nullptr) {
+    if (curr_frame->next == frame) {
+      curr_frame->next = frame->next;
+      bucket->frame_count--;
+      found_frame = true;
+      break;
+    }
+    curr_frame = curr_frame->next;
+  }
+
+  if(found_frame) {
+    free(frame->data);
+    frame->data = nullptr;
+    // delete frame;
+
+  }
+
+  return 0;
+}
+
+void buffer_pool_utils::find_next_frame(const std::vector<Bucket *> directory, int directory_size, Frame * &frame, int &bucket_num) {
+  Frame *curr_frame = frame;
+  int curr_bucket_num = bucket_num;
+  Bucket *curr_bucket = directory[curr_bucket_num];
+
+  while (curr_frame == frame) {
+    // Find next frame in the "clock"
+    if(curr_frame->next == nullptr) {
+      // Find the next non-empty bucket
+      do {
+        // Wrap around 
+        if(curr_bucket_num == (directory_size-1)) {
+          curr_bucket_num = 0;
+        } else {
+          curr_bucket_num++;
+        }
+        curr_bucket = directory[curr_bucket_num];
+      } while (curr_bucket->frame_count == 0);
+      curr_frame = curr_bucket->frame;
+      
+    } else {
+      curr_frame = curr_frame->next;
+      break;
+    }
+  }
+  bucket_num = curr_bucket_num;
+  frame = curr_frame;
+  
+}
+
+
+int buffer_pool_utils::rehash_bucket(std::vector<Bucket *> directory, int directory_size, int prefix_length, Bucket *bucket) {
+  
+  Frame *curr_frame = bucket->frame;
+
+  // Find all buckets point to same list of frames, each will now point to a new bucket
+  Bucket *potential_matching_bucket;
+  for(int i = 0; i < directory_size; ++i) {
+    potential_matching_bucket = directory[i];
+    if(potential_matching_bucket->frame == curr_frame) {
+      // Both buckets point to same node, split
+      potential_matching_bucket->frame = nullptr;
+      potential_matching_bucket->frame_count = 0;
+      potential_matching_bucket->rehashed = true;
+    }
+  }
+
+  Frame *frame_to_rehash;
+  while(curr_frame != nullptr) {
+
+    frame_to_rehash = curr_frame;
+    curr_frame = curr_frame->next;
+
+    frame_to_rehash->next = nullptr;
+
+    Bucket *insert_into_bucket = buffer_pool_utils::get_bucket(directory, prefix_length, frame_to_rehash->hash_key);
+    buffer_pool_utils::insert_frame(insert_into_bucket, frame_to_rehash);
+  }
+  return 0;
 }

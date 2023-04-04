@@ -10,9 +10,11 @@ class BufferPoolTest : public ::testing::Test{
     BufferPoolTest(){};
 
     virtual void SetUp() override {
-      int initial_size = pow(2, 3);
-      int max_size = pow(2, 4);
-      buffer_pool = new BufferPool(initial_size, max_size);
+      BufferPoolOptions buf_options;
+      buf_options.initial_size = pow(2, 3);
+      buf_options.max_size = pow(2, 3);
+      std::string policy = "CLOCK";
+      buffer_pool = new BufferPool(buf_options);
       std::cout << "SetUp called";
     }
 

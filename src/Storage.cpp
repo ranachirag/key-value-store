@@ -11,12 +11,12 @@
 #include "SST.h"
 #include "utils.h"
 
-Storage::Storage(std::string db_name) : db_name(db_name) {
+Storage::Storage(StorageOptions options) : options(options) {
   std::vector<SST *> SSTs;
 }
 
 
-Storage::Storage(std::string db_name, std::vector<std::string> sst_files) : db_name(db_name) {
+Storage::Storage(StorageOptions options, std::vector<std::string> sst_files) : options(options) {
   std::vector<SST *> SSTs;
 
   for (std::string filename : sst_files) {
@@ -29,7 +29,7 @@ int Storage::num_SST() {
 }
 
 std::string Storage::get_SST_filepath(std::string sst_filename) {
-  std::string filepath = db_name + "/" + sst_filename;
+  std::string filepath = options.db_name + "/" + sst_filename;
   return filepath;
 }
 
@@ -41,7 +41,11 @@ std::string Storage::get_SST_filename() {
 
 void Storage::create_SST(std::string filename) {
   std::string filepath = get_SST_filepath(filename);
-  SST *sst_to_add = new SST(filepath);
+  SST *sst_to_add;
+  if(options.sst_structure == LIST_SST) {
+    sst_to_add = new ListSST(filepath);
+  } 
+  // TODO: Potentiall add more options
   SSTs.emplace_back(sst_to_add);
 }
 
@@ -65,7 +69,7 @@ long Storage::get_value(long key, bool &val_found) {
 
   for (auto it = SSTs.rbegin(); it != SSTs.rend(); ++it){
     SST *sst = *it;
-    val = sst->search(key, val_found);
+    val = sst->search(options.use_buffer_pool, options.buffer_pool, key, val_found);
     if (val_found) {
       return val;
     }
@@ -88,5 +92,6 @@ void Storage::reset() {
   for (auto ptr : SSTs) {
     delete ptr;
   }
+  SSTs.clear();
 }
 

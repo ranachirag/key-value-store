@@ -6,6 +6,14 @@
 #include <string>
 
 #include "SST.h"
+#include "BufferPool.h"
+
+struct StorageOptions {
+  std::string db_name;
+  bool use_buffer_pool;
+  BufferPool *buffer_pool;
+  std::string sst_structure;
+};
 
 /**
  * This class represents an interface for SST storage
@@ -15,17 +23,17 @@ class Storage {
     /**
      * Constructor for empty SST storage
      * 
-     * @param db_name Name of database to store SSTs
+     * @param options Storage configuration
     */
-    Storage(std::string db_name);
+    Storage(StorageOptions options);
 
     /**
      * Constructor given an intial set of SSTs (sorted by oldest to youngest)
      * 
-     * @param db_name Name of database to store SSTs
+     * @param options Storage configuration
      * @param sst_files SST filenames
     */
-    Storage(std::string db_name, std::vector<std::string> sst_files);
+    Storage(StorageOptions options, std::vector<std::string> sst_files);
 
     /**
      * Add a list of key-value pairs to SST storage
@@ -106,6 +114,11 @@ class Storage {
      * List of object representations of all the SSTs in storage
     */
     std::vector<SST*> SSTs;
+
+    /**
+     * Storage configurations
+     */
+    StorageOptions options;
 
 };
 
