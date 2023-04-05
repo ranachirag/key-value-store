@@ -2,8 +2,7 @@
 #define STEP1EXPERIMENT_H
 
 #include "Database.h"
-#include "Bufferpool.h"
-#include "Database.h"
+#include "BufferPool.h"
 
 class Step1Experiment{
   public: 

@@ -1,5 +1,5 @@
 #include "Step1Experiment.h"
-#include "Bufferpool.h"
+#include "BufferPool.h"
 #include "Database.h"
 #include <iomanip>
 #include <iostream>
