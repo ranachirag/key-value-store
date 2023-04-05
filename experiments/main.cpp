@@ -21,11 +21,13 @@ int main() {
   db_options.buffer_pool_options = buf_options;
   db_options.memtable_size = 4096;
 
-  // int sizes[15] = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768};
-    int sizes[15] = {2, 4, 8, 16, 32, 64, 128, 256};
+  int sizes[15] = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768};
+    // int sizes[15] = {2, 4, 8, 16, 32, 64, 128, 256};
   for (int size: sizes){
     Step1Experiment *exp = new Step1Experiment(size, db_options);
     exp->putExperiment();
+    exp->getExperiment();
+    // exp->deleteExperiment();
   }
 
 }
