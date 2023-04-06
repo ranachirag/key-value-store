@@ -30,7 +30,7 @@ class Step1Experiment{
     /**
      * Delete entries from database and time it
     */
-    void deleteExperiment();
+    void scanExperiment();
 
     // /**
     //  * Open Database given the options

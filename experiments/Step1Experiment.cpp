@@ -54,18 +54,24 @@ std::cout << std::to_string(size_in_mb) + "MB Get DNE values: " << std::to_strin
 
 }
 
-void Step1Experiment::deleteExperiment(){
-  ::std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
+void Step1Experiment::scanExperiment(){
+  std::random_device rd;     // Only used once to initialise (seed) engine
+  std::mt19937 rng(rd());    // Random-number engine used (Mersenne-Twister in this case)
+  std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
   for (int i = 0; i < 1; ++i) {
-    for(int j = 0; j < 131072 * size_in_mb; ++j) {
-      int key_val = i*131072 + j;
-      db->get(key_val);
-    }
+    for(int j = 0; j < 10; ++j) {
+      std::uniform_int_distribution<int> uni(0,131072 * size_in_mb);
+      auto rand_int1 = uni(rng);
+      auto rand_int2 = uni(rng);
+      std::vector<std::pair<long, long> > lst;
+      db->scan(lst, rand_int1, rand_int2);
+      }
+      // std::cout << rand_int << std::endl;
   }
-::std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
+std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
 std::cout << std::fixed << std::setprecision(9) << std::endl;
 double duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
-std::cout << std::to_string(size_in_mb) + "MB Delete Milliseconds: " << duration * 1000 << std::endl;
+std::cout << std::to_string(size_in_mb) + "MB Scan Milliseconds: " << duration * 1000 << std::endl;
 
 }
 
