@@ -2,33 +2,18 @@
 #include <algorithm>
 #include <list>
 #include <limits>
+#include <climits>
 
 #include "AVL.h"
 #include "Node.h"
 
-AVL_Tree::AVL_Tree() {
+AVLTree::AVLTree(bool updates_supported, bool deletes_supported) : updates_supported(updates_supported), deletes_supported(deletes_supported) {
   root = NULL;
   size = 0;
   min_key = std::numeric_limits<long>::infinity();
   max_key = -std::numeric_limits<long>::infinity();
 }
 
-// TODO: Remove, only used for debugging 
-void printTree(Node *root_node, std::string indent, bool last) {
-  if (root_node != NULL) {
-    std::cout << indent;
-    if (last) {
-      std::cout << "R----";
-      indent += "   ";
-    } else {
-      std::cout << "L----";
-      indent += "|  ";
-    }
-    std::cout << root_node->key << " (H = " << root_node->height << ")" << std::endl;
-    printTree(root_node->l, indent, false);
-    printTree(root_node->r, indent, true);
-  }
-}
 
 int get_balance_factor(Node *root_node) {
   int balance_factor = 0;
@@ -92,7 +77,7 @@ Node *rotate_right(Node *root_node){
 }
 
 
-Node *AVL_Tree::balance_tree(Node *root_node, long key) {
+Node *AVLTree::balance_tree(Node *root_node, long key) {
   int balance_factor = get_balance_factor(root_node);
   if (balance_factor >= 2){
     if (key > root_node->r->key){
@@ -116,11 +101,14 @@ Node *AVL_Tree::balance_tree(Node *root_node, long key) {
 }
 
 
-Node *AVL_Tree::insert_node(Node *root_node, long key, long value) {
+Node *AVLTree::insert_node(Node *root_node, long key, long value) {
   if (root_node == NULL) {
     root_node = new Node(key, value);
     return root_node;
   } else if (root_node->key == key) {
+    if(updates_supported){
+      root_node->value = value;
+    }
     return root_node;
   } else if (key < root_node->key) {
     root_node->l = insert_node(root_node->l, key, value);
@@ -133,7 +121,7 @@ Node *AVL_Tree::insert_node(Node *root_node, long key, long value) {
   return root_node;
 }
 
-Node *AVL_Tree::find_node(Node *root_node, long key) {
+Node *AVLTree::find_node(Node *root_node, long key) {
   if(root_node == NULL){
     return NULL;
   } else if (key == root_node->key) {
@@ -150,7 +138,7 @@ Node *AVL_Tree::find_node(Node *root_node, long key) {
   return NULL;
 }
 
-void AVL_Tree::reset_tree_nodes(Node *&root_node) {
+void AVLTree::reset_tree_nodes(Node *&root_node) {
   if(!root_node) {
     return;
   } 
@@ -161,7 +149,7 @@ void AVL_Tree::reset_tree_nodes(Node *&root_node) {
 }
 
 
-void AVL_Tree::insert(long key, long value) {
+void AVLTree::insert(long key, long value) {
   root = insert_node(root, key, value);
   size += VALUE_SIZE;
   if (key < min_key) {
@@ -173,21 +161,18 @@ void AVL_Tree::insert(long key, long value) {
 }
 
 
-long AVL_Tree::get_value(long key, bool &val_found) {
+long AVLTree::get_value(long key, bool &val_found) {
   Node *node = find_node(root, key);
-  if (node == NULL) {
-    val_found = false;
+  val_found = false;
+  if (node == NULL ) {
     return -1;
   }
   val_found = true;
   return node->value;
 }
 
-void AVL_Tree::print_tree() {
-  printTree(root, "", false);
-}
 
-int AVL_Tree::range_search_nodes(std::vector<std::pair<long, long> > &result, Node *root_node, long key1, long key2) {
+int AVLTree::range_search_nodes(std::vector<std::pair<long, long> > &result, Node *root_node, long key1, long key2) {
   if (root_node == NULL) {
     return 0;
   }
@@ -204,11 +189,13 @@ int AVL_Tree::range_search_nodes(std::vector<std::pair<long, long> > &result, No
   if (root_node->key >= key1 && root_node->key <= key2) {
     // search both subtrees
 
-
     int l_results = range_search_nodes(result, root_node->l, key1, root_node->key);
-
+    
     std::pair<long, long> root_pair (root_node->key, root_node->value);
-    result.push_back(root_pair);
+
+    if(!(deletes_supported && (root_node->value == LONG_MIN))) {
+      result.push_back(root_pair);
+    }
 
     int r_results = range_search_nodes(result, root_node->r, root_node->key, key2);
 
@@ -216,19 +203,19 @@ int AVL_Tree::range_search_nodes(std::vector<std::pair<long, long> > &result, No
   return result.size();
 }
 
-int AVL_Tree::range_search(std::vector<std::pair<long, long> > &result, long key1, long key2) {
+int AVLTree::range_search(std::vector<std::pair<long, long> > &result, long key1, long key2) {
   int prev_size = result.size();
   return range_search_nodes(result, root, key1, key2) - prev_size;
 }
 
-void AVL_Tree::reset_tree() {
+void AVLTree::reset_tree() {
   reset_tree_nodes(root);
   size = 0;
   min_key = std::numeric_limits<long>::infinity();
   max_key = -std::numeric_limits<long>::infinity();
 }
 
-Node *AVL_Tree::get_root() {
+Node *AVLTree::get_root() {
   return root;
 }
 

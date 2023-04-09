@@ -6,6 +6,7 @@
 #include <string>
 #include "utils.h"
 #include "BufferPool.h"
+#include "DatabaseMacros.h"
 
 int main() {
   // Memtable memtable = new Memtable(5);
@@ -62,11 +63,19 @@ int main() {
   BufferPoolOptions buf_options;
   buf_options.initial_size = 1024;
   buf_options.max_size = 1024;
+  buf_options.evict_policy = CLOCK_EVICT;
+
+  BloomFilterOptions bloom_filter_options;
+  bloom_filter_options.false_positive_rate = 0.1;
 
   DatabaseOptions db_options;
-  db_options.use_buffer_pool = false;
+  db_options.use_buffer_pool = true;
   db_options.buffer_pool_options = buf_options;
   db_options.memtable_size = 4096;
+  db_options.use_bloom_filters = true;
+  db_options.bloom_filter_options = bloom_filter_options;
+  db_options.sst_structure = LIST_SST;
+  db_options.storage_structure = LSM_TREE_STORAGE;
 
   Database *kv_store = new Database(db_options);
 
@@ -81,16 +90,38 @@ int main() {
   //   }
   // }
 
-  for (int i = 0; i < 1; ++i) {
-    for(int j = 690; j < 800; ++j) {
-      int key_val = i*131072 + j;
-      long val = kv_store->get(key_val);
-      std::cout << key_val << ": " << val << std::endl;
-    }
+  for (int i = 0; i < 100000; ++i) {
+    // for(int j = 0; j < 131072; ++j) {
+      int key_val = i;
+      kv_store->put(key_val, key_val-2);
+    // }
   }
 
-  std::vector<std::pair<long, long> > vals;
-  int entries = kv_store->scan(vals, 1, 1000);
+  for (int i = -1000; i < 1001; ++i) {
+    int key_val = i;
+    long val = kv_store->get(key_val);
+    std::cout << key_val << ": " << val << std::endl;
+  }
+
+  long val = kv_store->get(500);
+  std::cout << "BEFORE DELETE" << ": " << val << std::endl;
+
+  kv_store->remove(500);
+  val = kv_store->get(500);
+  std::cout << "AFTER DELETE" << ": " << val << std::endl;
+
+
+
+  // for (int i = 0; i < 1; ++i) {
+  //   for(int j = 131070; j < 131072; ++j) {
+  //     int key_val = i*131072 + j;
+  //     long val = kv_store->get(key_val);
+  //     std::cout << key_val << ": " << val << std::endl;
+  //   }
+  // }
+
+  // std::vector<std::pair<long, long> > vals;
+  // int entries = kv_store->scan(vals, 1, 1000);
   // std::cout << vals[999].first << std::endl;
   kv_store->close();
 

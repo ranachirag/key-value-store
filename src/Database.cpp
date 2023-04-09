@@ -1,20 +1,18 @@
 #include <algorithm>
 #include <list>
 #include <string>
+#include <climits>
 #include <unistd.h>
 #include <dirent.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "utils.h"
 #include "Database.h"
+#include "Storage.h"
 #include "AVL.h"
 
-bool sst_filename_compare(std::string file_a, std::string file_b) {
-  int file_a_age = std::stoi(file_a.substr(4));
-  int file_b_age = std::stoi(file_b.substr(4));
-  return file_a_age < file_b_age;
-}
 
 Database::Database (DatabaseOptions options) : options(options) {
   db_open = false;
@@ -42,10 +40,12 @@ void Database::open(std::string db_name) {
     storage_options.buffer_pool = buffer_pool;
   }
   storage_options.sst_structure = options.sst_structure;
+  storage_options.use_bloom_filters = options.use_bloom_filters;
+  storage_options.bloom_filter_options = options.bloom_filter_options;
+  storage_options.memtable_capacity = options.memtable_size / VALUE_SIZE; // Memtable size is in terms of bytes
 
   if (stat(db_name_chr, &dir_info) == 0 && (dir_info.st_mode & S_IFDIR) != 0) {
     // Dir exists, read SSTs
-
     std::vector<std::string> sst_files;
 
     DIR* dir = opendir(db_name_chr);
@@ -55,27 +55,39 @@ void Database::open(std::string db_name) {
     }
     dirent* dir_file;
     while ((dir_file = readdir(dir)) != NULL) { 
-        if (dir_file->d_type == DT_REG) {  
-            sst_files.push_back(dir_file->d_name);
-        }
+      if (dir_file->d_type == DT_REG) {  
+        sst_files.push_back(dir_file->d_name);
+      }
     }
     closedir(dir);
 
-    std::sort(sst_files.begin(), sst_files.end(), sst_filename_compare);
-
-    storage = new Storage(storage_options, sst_files);
-
+    if(options.storage_structure == APPEND_ONLY_STORAGE) {
+      std::sort(sst_files.begin(), sst_files.end(), file_utils::sst_filename_compare);
+      storage = new StorageAppendOnly(storage_options, sst_files);
+    } else if(options.storage_structure == LSM_TREE_STORAGE) {
+      storage = new StorageLSM(storage_options, sst_files);
+    }
+    
   } else {
     // Dir doesn't exist, create dir
     if (mkdir(db_name_chr, 0777) != 0) {
       perror("Couldn't create directory");
       return;
     } else {
-      storage = new Storage(storage_options);
+      if(options.storage_structure == APPEND_ONLY_STORAGE) {
+        storage = new StorageAppendOnly(storage_options);
+      } else if(options.storage_structure == LSM_TREE_STORAGE) {
+        storage = new StorageLSM(storage_options);
+      }
     }
   }
+  
+  if(options.storage_structure == LSM_TREE_STORAGE) {
+    memtable = new AVLTree(true, true);
+  } else if(options.storage_structure == APPEND_ONLY_STORAGE) {
+    memtable = new AVLTree(false, false);
+  }
 
-  memtable = new AVL_Tree();
 }
 
 void Database::put(long key, long value) {
@@ -105,7 +117,6 @@ long Database::get(long key) {
   bool val_found;
   long val;
 
- 
   val = memtable->get_value(key, val_found);
   if (val_found) {
     return val;
@@ -136,6 +147,14 @@ int Database::scan(std::vector<std::pair<long, long> > &result, long key1, long 
   return kv_range_mem_size + kv_range_storage_size;
 }
 
+int Database::remove(long key) {
+  if(options.storage_structure == LSM_TREE_STORAGE) {
+    put(key, LONG_MIN);
+    return 0;
+  }
+  return -1;
+}
+
 int Database::update_buffer_pool_size(int new_max_size) {
   if(db_open && options.use_buffer_pool) {
     int code = buffer_pool->update_directory_size(new_max_size);
@@ -162,10 +181,8 @@ void Database::close() {
       delete buffer_pool;
     }
     
-    
     delete memtable;
     delete storage;
-    
 
     db_open = false;
   }

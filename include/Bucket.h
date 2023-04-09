@@ -3,6 +3,9 @@
 
 #include "Frame.h"
 
+/**
+ * This class represents a hash bucket in the Buffer Pool directory
+ */
 class Bucket {
   public:
     /**

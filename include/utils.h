@@ -4,9 +4,26 @@
 #include "Frame.h"
 #include "Bucket.h"
 #include "BufferPool.h"
+#include "Storage.h"
+#include "SST.h"
 #include "DatabaseMacros.h"
 
+/**
+ * This namespace contains utility functions dealing with Files and Buffers
+ */
 namespace file_utils {
+
+  /**
+   * Compare age of SST files by their filename
+   * 
+   * @param file_a File A
+   * @param file_b File B
+   * 
+   * @return true - If File A is older
+   * @return false - If File A is younger
+   */
+  bool sst_filename_compare(std::string file_a, std::string file_b);
+
   /**
    * Get the file size of a given file
    * 
@@ -16,6 +33,14 @@ namespace file_utils {
   */
   long get_filesize(std::string filepath);
 
+  /**
+   * Reinterpret buffer as Key-Value pairs
+   * 
+   * @param buffer Buffer to reinterpret
+   * @param bytes_read Number of bytes to reintrepret
+   * 
+   * @return Key-Value representation of the buffer
+   */
   std::vector<std::pair<long, long>> reintrepret_buffer(void *buffer, int bytes_read);
 
   /**
@@ -52,6 +77,9 @@ namespace file_utils {
   int write_data(std::string filepath, long *data, long size);
 }
 
+/**
+ * This namespace contains utility functions dealing with Search algorithms
+ */
 namespace search_utils {
 
   /**
@@ -88,6 +116,9 @@ namespace search_utils {
   long binary_search_kv(std::vector<std::pair<long, long> > key_values, long key);
 }
 
+/**
+ * This namespace represents functions dealing with Hashing
+ */
 namespace hash_utils {
   /**
    * Get a 32 bit hash value from a provided string (hash key)
@@ -100,6 +131,9 @@ namespace hash_utils {
   int get_hash_value(std::string hash_key, int seed);
 }
 
+/**
+ * This namespace represents functions dealing with Numbers/Integers
+ */
 namespace math_utils {
   /**
    * Get the number of bits it takes to represent a given 32-bit integer 
@@ -122,17 +156,110 @@ namespace math_utils {
   int get_prefix_bits(unsigned int value, unsigned int num_bits);
 }
 
+/**
+ * This namespace represents functions dealing with the Buffer Pool object
+ */
 namespace buffer_pool_utils {
   
+  /**
+   * Get the offset into the Directory from prefix of the hash value
+   * 
+   * @param prefix_length Length of the prefix of the hash value
+   * @param hash_value Hash value
+   * 
+   * @return Offset into the Directory
+   */
   int get_offset(int prefix_length, unsigned int hash_value);
 
+  /**
+   * Get the hash bucket with the given hash key
+   * 
+   * @param directory Directory
+   * @param prefix_length Length of the hash value to use to index into the directory
+   * @param hash_key Hash key to use to find hash bucket
+   * 
+   * @return Hash bucket of the given hash key
+   */
   Bucket *get_bucket(const std::vector<Bucket *> directory, int prefix_length, std::string hash_key);
 
+  /**
+   * Rehash a hash bucket  
+   * 
+   * @param directory Directory
+   * @param directory_size Size of the directory 
+   * @param prefix_length Length of the hash value to use to index into the directory
+   * @param bucket Hash bucket to rehash
+   * 
+   * @return 0 if successfuly, -1 otherwise 
+   */
   int rehash_bucket(std::vector<Bucket *> directory, int directory_size, int prefix_length, Bucket *bucket);
 
+  /**
+   * Insert a frame into a hash bucket
+   * 
+   * @param bucket Hash bucket
+   * @param frame_to_insert Frame to insert
+   * 
+   * @return 0 if successfuly, -1 otherwise
+   */
   int insert_frame(Bucket *bucket, Frame *frame_to_insert);
-
+  
+  /**
+   * Delete a frame from the directory
+   * 
+   * @param directory Directory
+   * @param directory_size Size of the directory
+   * @param bucket Hash bucket to delete frame from
+   * @param frame Frame to delete
+   * 
+   * @return 0 if successfuly, -1 otherwise
+   */
   int delete_frame(std::vector<Bucket *> directory, int directory_size, Bucket *bucket, Frame *frame);
 
+  /**
+   * Algorithm that iterates through the directory (Clock algorithm)
+   * Starting from a given frame and ending when it reaches the next fram
+   * 
+   * @param directory Directory
+   * @param directory_size Size of the directory
+   * @param frame Frame to start search with, will be set to next frame after search completes
+   * @param bucket_num Bucket index into the directory that contains the starting frame, will be set to bucket index of next frame after search completes
+   */
   void find_next_frame(const std::vector<Bucket *> directory, int directory_size, Frame * &frame, int &bucket_num);
+}
+
+
+/**
+ * This namespace represents functions dealing with Option structs
+ */
+namespace options_utils {
+  /**
+   * Generates configuration options for LSM Level object, given Storage configuration
+   * 
+   * @param options Storage configuration options
+   * @param level_num The number of the level in the LSM tree
+   * 
+   * @return LSM Tree level configuration options
+   */
+  LevelLSMOptions storage_to_level(StorageOptions options, int level_num);
+
+  /**
+   * Generates configuration options for the next LSM Level in the LSM Tree, given current LSM Tree level configuration
+   * 
+   * @param options LSM Tree level configuration options for current level
+   * @param size_ratio The size ratio of SST file sizes between levels
+   * 
+   * @return LSM Tree level configuration options for next level
+   */
+  LevelLSMOptions level_to_next_level(LevelLSMOptions options, int size_ratio);
+
+  /**
+   * Generates configuration options for a SST object, given a LSM Tree level configuration 
+   * 
+   * @param options LSM Tree level configuration options 
+   * @param size_ratio The size ratio of SST file sizes between levels
+   * 
+   * @return SST configuration options
+   */
+  SSTOptions level_to_sst(LevelLSMOptions options, std::string filepath, int sst_capacity, bool file_exists);
 }

@@ -7,8 +7,9 @@
 
 Bucket::Bucket(Frame *frame, int frame_count, bool rehashed) : frame(frame), frame_count(frame_count), rehashed(rehashed) {}
 
-Frame::Frame(std::string hash_key, void *frame_data) : hash_key(hash_key) {
+Frame::Frame(std::string hash_key, void *frame_data, int frame_data_size) : hash_key(hash_key) {
   data = frame_data;
+  data_size = frame_data_size;
   next = nullptr;
   eviction_metadata = nullptr;
 }
@@ -128,7 +129,7 @@ int BufferPool::rehash_bucket(Bucket *bucket) {
   return 0;
 }
 
-int BufferPool::insert_data(std::string hash_key, void *data) {
+int BufferPool::insert_data(std::string hash_key, void *data, int data_size) {
 
   // Check if insertion would cause an expansion, pass in load factor
   bool expand = BufferPool::expansion_required(LOAD_FACTOR_THRESHOLD);
@@ -152,7 +153,16 @@ int BufferPool::insert_data(std::string hash_key, void *data) {
   }
 
   Bucket *insert_into_bucket = buffer_pool_utils::get_bucket(directory, prefix_length, hash_key);
-  Frame *frame_to_insert = new Frame(hash_key, data);
+
+  void *data_cpy;
+  int code = posix_memalign(&data_cpy, BLOCK_SIZE, data_size);
+  if(code != 0) {
+    perror("Unable to allocate memory for Buffer Pool");
+    return -1;
+  }
+
+  memcpy(data_cpy, data, data_size);
+  Frame *frame_to_insert = new Frame(hash_key, data_cpy, data_size);
 
   buffer_pool_utils::insert_frame(insert_into_bucket, frame_to_insert);
 
@@ -178,7 +188,7 @@ int search_bucket(Frame * &frame, const Bucket *bucket, std::string hash_key) {
 }
 
 
-int BufferPool::get_data(std::string hash_key, void * &data) {
+int BufferPool::get_data(std::string hash_key, void * &data, int &data_size) {
   Bucket *bucket = buffer_pool_utils::get_bucket(directory, prefix_length, hash_key);
 
   rehash_bucket(bucket);
@@ -189,7 +199,10 @@ int BufferPool::get_data(std::string hash_key, void * &data) {
 
   if(found == 0) {
     eviction_policy->frame_accessed(found_frame);
-    data = found_frame->data;
+    
+    // data = found_frame->data;
+    data_size = found_frame->data_size;
+    memcpy(data, found_frame->data, data_size);
     return 0;
   }
   return -1;

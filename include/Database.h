@@ -8,6 +8,7 @@
 #include "AVL.h"
 #include "Storage.h"
 #include "BufferPool.h"
+#include "BloomFilter.h"
 
 /**
  * This represents the options to configure the Database
@@ -29,9 +30,25 @@ struct DatabaseOptions {
   BufferPoolOptions buffer_pool_options;
 
   /**
+   * Structure of SST storage
+   */
+  std::string storage_structure;
+
+  /**
    * Structure of SST
    */
-  std::string sst_structure = "LIST"; // TODO: REMOVE ?
+  std::string sst_structure; 
+
+  /**
+   * Use Bloom Filter in each SST
+   */
+  bool use_bloom_filters;
+
+  /**
+   * Bloom Filter configurations
+   */
+  BloomFilterOptions bloom_filter_options;
+
 };
 
 /**
@@ -78,9 +95,19 @@ class Database {
     int scan(std::vector<std::pair<long, long> > &result, long key1, long key2); 
 
     /**
+     * Delete an entry with given key
+     * 
+     * @param key Key of entry to delete
+     * 
+     * @return 0 if successfully deleted, -1 otherwise
+    */
+    int remove(long key); 
+
+    /**
      * Update maximum size of the buffer pool, if configured.
      * 
      * @param new_max_size Updated maximum size of the buffer pool (in units of 4 KB)
+     * 
      * @return 0 if successfully updated, -1 otherwise
      */
     int update_buffer_pool_size(int new_max_size);
@@ -105,7 +132,7 @@ class Database {
     /**
      * Memtable
     */
-    AVL_Tree * memtable; 
+    AVLTree * memtable; 
 
     /**
      * The maximum size of the memtable

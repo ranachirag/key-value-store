@@ -14,11 +14,23 @@ class EvictionNode {
     /**
      * Construct a new Eviction Node object
      * 
-     * @param frame 
+     * @param frame The frame (equivalently a page)
      */
     EvictionNode(Frame *frame);
+
+    /**
+     * The frame (equivalently a page) 
+     */
     Frame *frame;
+
+    /**
+     * Previous EvictionNode in the Linked list
+     */
     EvictionNode *prev;
+
+    /**
+     * Next EvictionNode in the Linked list
+     */
     EvictionNode *next;
 };
 
@@ -33,6 +45,7 @@ class EvictionPolicy  {
      * @param directory Buffer Pool directory
      * @param directory_size Size of the Buffer Pool directory
      * @param prefix_length The number of prefix bits of the hash value the Buffer Pool is using
+     * 
      * @return 0 if frame evicted successfully, -1 otherwise
      */
     virtual int evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length) = 0;
@@ -41,6 +54,7 @@ class EvictionPolicy  {
      * This function is called when a frame is accessed, update metadata used by eviction policy algorithm
      * 
      * @param frame Frame that was accessed
+     * 
      * @return 0 if metadata updated successfully, -1 otherwise
      */
     virtual int frame_accessed(Frame *frame) = 0;
@@ -49,6 +63,7 @@ class EvictionPolicy  {
      * This function is called when a frame is created, update metadata used by eviction policy algorithm
      * 
      * @param frame Frame that was created
+     * 
      * @return 0 if metadata updated successfully, -1 otherwise 
      */
     virtual int frame_created(Frame *frame) = 0;

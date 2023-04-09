@@ -6,21 +6,21 @@
 #include <vector>
 
 #include "Node.h"
+#include "DatabaseMacros.h"
 
-// The size of Key to be inserted into the tree
-#define KEY_SIZE 8
-// The size of Value to be inserted into the tree
-#define VALUE_SIZE 8
 
 /**
  * This class represents an AVL Tree
  */
-class AVL_Tree {
+class AVLTree {
   public:
     /**
      * Constructor
+     * 
+     * @param updates_supported Support updates in AVL Tree
+     * @param deletes_supported Support delets in AVL Tree
     */
-    AVL_Tree();
+    AVLTree(bool updates_supported, bool deletes_supported);
 
     /**
      * Insert a key-value pair
@@ -57,11 +57,6 @@ class AVL_Tree {
     void reset_tree();
 
     /**
-     * Print a representation of the tree
-    */
-    void print_tree();
-
-    /**
      * Size of the tree, in terms of the number of bytes of all Values it contains
     */
     long size;
@@ -82,6 +77,20 @@ class AVL_Tree {
     Node *get_root();
 
   private:
+    
+    /**
+     * Supports updates in AVL Tree
+     */
+    bool updates_supported;
+
+    /**
+     * Supports deletes in AVL Tree
+     * 
+     * Note: This is essentially a "pseudo-delete", if value from a search is a Tombstone its value is 
+     *       not returned but it is still contained in the AVL Tree
+     */
+    bool deletes_supported;
+
     /**
      * The root node of the AVL Tree
     */

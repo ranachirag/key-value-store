@@ -14,8 +14,9 @@ class Frame {
      * 
      * @param hash_key - Hash key of the data
      * @param frame_data - Data to store
+     * @param frame_data_size - Size of data (in bytes)
      */
-    Frame(std::string hash_key, void *frame_data);
+    Frame(std::string hash_key, void *frame_data, int frame_data_size);
 
     /**
      * Hash key of the data
@@ -26,6 +27,11 @@ class Frame {
      * Page data
      */
     void *data;
+    
+    /**
+     * Size of data (in bytes)
+     */
+    int data_size;
 
     /**
      * Next Frame in the same bucket

@@ -2,6 +2,16 @@
 #define DATABASE_MACROS_H
 
 /**
+ * Size of a Key (in bytes)
+ */
+#define KEY_SIZE 8
+
+/**
+ * Size of a Value (in bytes)
+ */
+#define VALUE_SIZE 8
+
+/**
  * Size of 1 block/page
  */
 #define BLOCK_SIZE 4096
@@ -38,5 +48,22 @@
  * B-Tree SST structure
  */
 #define BTREE_SST "BTREE"
+
+/**
+ * Append Only Storage option
+ */
+#define APPEND_ONLY_STORAGE "APPEND_ONLY_STORAGE"
+
+/**
+ * LSM Tree Storage option
+ */
+#define LSM_TREE_STORAGE "LSM_TREE_STORAGE"
+
+/**
+ * Threshold to compact a level
+ * 
+ * Equivalent to the size ration between 2 levels
+ */
+#define SIZE_RATIO 2
 
 #endif

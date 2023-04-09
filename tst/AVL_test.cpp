@@ -11,14 +11,14 @@
 #include <vector>
 #include <string>
 
-class AVL_TreeTest : public ::testing::Test{
+class AVLTreeTest : public ::testing::Test{
   protected:
-    AVL_Tree* tree;
+    AVLTree* tree;
 
-    AVL_TreeTest(){};
+    AVLTreeTest(){};
 
     virtual void SetUp() override {
-      tree = new AVL_Tree();
+      tree = new AVLTree(false, false);
       std::cout << "SetUp called";
     }
 
@@ -28,7 +28,7 @@ class AVL_TreeTest : public ::testing::Test{
     }
 };
 
-TEST_F(AVL_TreeTest, getRootTest) {
+TEST_F(AVLTreeTest, getRootTest) {
   Node *root = tree->get_root();
   ASSERT_EQ(root, nullptr);
   tree->insert(0,0);
@@ -38,7 +38,7 @@ TEST_F(AVL_TreeTest, getRootTest) {
   ASSERT_EQ(root->value, 0);
 }
 
-TEST_F(AVL_TreeTest, resetTreeTest) {
+TEST_F(AVLTreeTest, resetTreeTest) {
   Node *root = tree->get_root();
   ASSERT_EQ(root, nullptr);
   tree->insert(0,0);
@@ -54,20 +54,20 @@ TEST_F(AVL_TreeTest, resetTreeTest) {
   ASSERT_NE(tree->max_key, 0);
 }
 
-TEST_F(AVL_TreeTest, getValueTest) {
+TEST_F(AVLTreeTest, getValueTest) {
   tree->insert(0,0);
   bool val = false;
   Node *root = tree->get_root();
   ASSERT_EQ(tree->get_value(0, val), 0);
 }
 
-TEST_F(AVL_TreeTest, insertTest1) {
+TEST_F(AVLTreeTest, insertTest1) {
   tree->insert(0,0);
   ASSERT_EQ(tree->min_key, 0);
   ASSERT_EQ(tree->max_key, 0);
 }
 
-TEST_F(AVL_TreeTest, insertTest2) {
+TEST_F(AVLTreeTest, insertTest2) {
   tree->insert(0,0);
   tree->insert(1,1);
   ASSERT_EQ(tree->min_key, 0);
@@ -76,7 +76,7 @@ TEST_F(AVL_TreeTest, insertTest2) {
   ASSERT_EQ(root->value, 0);
 }
 
-TEST_F(AVL_TreeTest, insertTest3) {
+TEST_F(AVLTreeTest, insertTest3) {
   // rotate left
   tree->insert(0,0);
   tree->insert(1,1);
@@ -87,7 +87,7 @@ TEST_F(AVL_TreeTest, insertTest3) {
   ASSERT_EQ(root->value, 1);
 }
 
-TEST_F(AVL_TreeTest, insertTest4) {
+TEST_F(AVLTreeTest, insertTest4) {
   // rotate right
   tree->insert(2,2);
   tree->insert(1,1);
@@ -100,7 +100,7 @@ TEST_F(AVL_TreeTest, insertTest4) {
 
 // TODO test right left rotation
 
-TEST_F(AVL_TreeTest, insertTest5) {
+TEST_F(AVLTreeTest, insertTest5) {
   ASSERT_EQ(tree->size, 0);
   tree->insert(5,5);
   tree->insert(2,2);
@@ -122,7 +122,7 @@ TEST_F(AVL_TreeTest, insertTest5) {
 
 // TODO test left right rotation
 
-TEST_F(AVL_TreeTest, insertTest6) {
+TEST_F(AVLTreeTest, insertTest6) {
   tree->insert(5,5);
   tree->insert(2,2);
   tree->insert(7,7);
@@ -143,7 +143,7 @@ TEST_F(AVL_TreeTest, insertTest6) {
 
 // TODO test range search 
 
-TEST_F(AVL_TreeTest, rangeSearchTest) {
+TEST_F(AVLTreeTest, rangeSearchTest) {
   tree->insert(5,5);
   tree->insert(2,2);
   tree->insert(7,7);

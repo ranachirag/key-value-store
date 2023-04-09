@@ -9,6 +9,9 @@
 
 #include "DatabaseMacros.h"
 
+/**
+ * This struct represents the configuration options of a BufferPool object
+ */
 struct BufferPoolOptions {
   /**
    * Intial size of the Buffer pool directory (in units of number of 4 KB pages it can store)
@@ -43,18 +46,22 @@ class BufferPool {
      * 
      * @param hash_key Hash key of the data 
      * @param data Pointer to the data 
+     * @param data_size Size of data to be inserted
+     * 
      * @return 0 if successfully inserted, -1 otherwise
      */
-    int insert_data(std::string hash_key, void *data);
+    int insert_data(std::string hash_key, void *data, int data_size);
 
     /**
      * @brief Get the data potentially stored in the Buffer Pool using hash key
      * 
      * @param hash_key Hash key of the data to retreive
      * @param data Pointer that is set to the data if found
+     * @param data_size Int that is set to the size of data if found
+     * 
      * @return 0 if data is found, -1 otherwise
      */
-    int get_data(std::string hash_key, void * &data);
+    int get_data(std::string hash_key, void * &data, int &data_size);
 
     /**
      * Update (grow/shrink) the Buffer Pool directory
@@ -62,6 +69,7 @@ class BufferPool {
      * Note: The new size of the Buffer Pool directory must be a power of 2
      * 
      * @param new_max_size New size maximum size of the Buffer Pool directory
+     * 
      * @return 0 if successfully updated, -1 otherwise
      */
     int update_directory_size(int new_max_size);
@@ -121,7 +129,8 @@ class BufferPool {
      * Note: Load factor = number of pages in the directory / number of buckets 
      *       For example, load factor threshold is set to 1 if ideally we want 1 frame per each bucket
      * 
-     * @param threshold The th
+     * @param threshold If the load factor is greater than this threshold, the directory requires expansion
+     * 
      * @return true - If the directory requires expansion
      * @return false - If the directory does not require expansion
      */
@@ -131,6 +140,7 @@ class BufferPool {
      * Initialize the buffer pool directory to hold initial size number of buckets
      * 
      * @param inital_size Initial size of the directory
+     * 
      * @return 0 if initialized successfuly, -1 otherwise
      */
     int initialize_directory(int inital_size);
@@ -147,6 +157,7 @@ class BufferPool {
      * pool directory was expanded.
      * 
      * @param bucket Bucket to rehash
+     * 
      * @return 0 if rehashed successfully, -1 otherwise
      */
     int rehash_bucket(Bucket *bucket);

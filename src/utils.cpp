@@ -11,10 +11,15 @@
 #include "xxhash.h"
 
 #include "utils.h"
-#include "SST.h"
 
 
 // ----------------- File Utils -----------------------
+
+bool file_utils::sst_filename_compare(std::string file_a, std::string file_b) {
+  int file_a_age = std::stoi(file_a.substr(4));
+  int file_b_age = std::stoi(file_b.substr(4));
+  return file_a_age < file_b_age;
+}
 
 long file_utils::get_filesize(std::string filepath) {
   struct stat file_info;
@@ -25,7 +30,6 @@ long file_utils::get_filesize(std::string filepath) {
   long filesize = file_info.st_size;
   return filesize;
 }
-
 
 
 std::vector<std::pair<long, long>> file_utils::reintrepret_buffer(void *buffer, int bytes_read) {
@@ -58,30 +62,29 @@ int file_utils::read_block_buffer_pool(BufferPool *buffer_pool, void * &buffer, 
       perror("Error opening file");
   }
 
+  int bytes_read;
+  
   std::string hash_key = filepath + "_" + std::to_string(block_num);
 
-  int found = buffer_pool->get_data(hash_key, buffer);
-
+  int found = buffer_pool->get_data(hash_key, buffer, bytes_read);
 
   if(found == 0) {
     close(fd);
-    // TODO: store bytes_read in buffer pool frame? Probably not
-    return BLOCK_SIZE;
+    return bytes_read;
   }
 
   long offset = block_num * BLOCK_SIZE;
-  long bytes_read = pread(fd, buffer, BLOCK_SIZE, offset);
-  
+  bytes_read = pread(fd, buffer, BLOCK_SIZE, offset);
 
-  buffer_pool->insert_data(hash_key, buffer);
+  buffer_pool->insert_data(hash_key, buffer, bytes_read);
 
   close(fd);
-
   return bytes_read;
 }
 
+
 int file_utils::write_data(std::string filepath, long* data, long data_size) {
-  int fd = open(filepath.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666); // Add O_DIRECT Flag
+  int fd = open(filepath.c_str(), O_WRONLY | O_APPEND | O_CREAT, 0666); // Add O_DIRECT Flag
 
   if (fd == -1) {
       perror("Error opening file");
@@ -90,7 +93,13 @@ int file_utils::write_data(std::string filepath, long* data, long data_size) {
 
   long num_blocks = data_size / BLOCK_SIZE; 
 
-  long offset = 0;
+  off_t offset = lseek(fd, 0, SEEK_END);
+  if (offset == -1) {
+      // error handling
+      close(fd);
+      return 1;
+  }
+
   long size_unwritten = data_size;
   long* buf_unwritten = data;
   const int block_size_long = BLOCK_SIZE / sizeof(long);
@@ -395,4 +404,47 @@ int buffer_pool_utils::rehash_bucket(std::vector<Bucket *> directory, int direct
     buffer_pool_utils::insert_frame(insert_into_bucket, frame_to_rehash);
   }
   return 0;
+}
+
+// ----------------- Options Utils -----------------------
+
+LevelLSMOptions options_utils::storage_to_level(StorageOptions options, int level_num) {
+  LevelLSMOptions level_LSM_options;
+  level_LSM_options.db_name = options.db_name;
+  level_LSM_options.level_num = level_num;
+  level_LSM_options.sst_capacity = options.memtable_capacity;
+  level_LSM_options.use_bloom_filters = options.use_bloom_filters;
+  level_LSM_options.bloom_filter_options = options.bloom_filter_options;
+  level_LSM_options.sst_structure = options.sst_structure;
+  level_LSM_options.use_buffer_pool = options.use_buffer_pool;
+  level_LSM_options.buffer_pool = options.buffer_pool;
+
+  return level_LSM_options;
+}
+
+LevelLSMOptions options_utils::level_to_next_level(LevelLSMOptions options, int size_ratio) {
+  LevelLSMOptions level_LSM_options;
+  level_LSM_options.db_name = options.db_name;
+  level_LSM_options.level_num = options.level_num + 1;
+  level_LSM_options.sst_capacity = options.sst_capacity * size_ratio;
+  level_LSM_options.use_bloom_filters = options.use_bloom_filters;
+  level_LSM_options.bloom_filter_options = options.bloom_filter_options;
+  level_LSM_options.sst_structure = options.sst_structure;
+  level_LSM_options.use_buffer_pool = options.use_buffer_pool;
+  level_LSM_options.buffer_pool = options.buffer_pool;
+
+  return level_LSM_options;
+}
+
+SSTOptions options_utils::level_to_sst(LevelLSMOptions options, std::string filepath, int sst_capacity, bool file_exists) {
+  SSTOptions sst_options;
+  sst_options.use_bloom_filter = options.use_bloom_filters;
+  sst_options.bloom_filter_options = options.bloom_filter_options;
+  sst_options.filepath = filepath;
+  sst_options.file_exists = file_exists;
+  sst_options.sst_capacity = sst_capacity;
+  sst_options.use_buffer_pool = options.use_buffer_pool;
+  sst_options.buffer_pool = options.buffer_pool;  
+
+  return sst_options;
 }
