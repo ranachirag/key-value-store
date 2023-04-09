@@ -16,18 +16,28 @@ int main() {
   BufferPoolOptions buf_options;
   buf_options.initial_size = 1024;
   buf_options.max_size = 1024;
+  buf_options.evict_policy = CLOCK_EVICT;
+
+  BloomFilterOptions bloom_filter_options;
+  bloom_filter_options.false_positive_rate = 0.1;
 
   DatabaseOptions db_options;
   db_options.use_buffer_pool = false;
   db_options.buffer_pool_options = buf_options;
   db_options.memtable_size = 4096;
+  db_options.use_bloom_filters = false;
+  db_options.bloom_filter_options = bloom_filter_options;
+  db_options.sst_structure = LIST_SST;
+  db_options.storage_structure = APPEND_ONLY_STORAGE;
+
+  int arr_size = 8;
 
   // int sizes[11] = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048};
   int sizes[8] = {2, 4, 8, 16, 32, 64, 128, 256};
   std::string* putValues = new std::string[8];
   std::string* getValues = new std::string[8];
   std::pair<std::string, std::string> scanValues[8];
-  for (int i = 0; i < 8; i++){
+  for (int i = 0; i < arr_size; i++){
     Step1Experiment *exp = new Step1Experiment(sizes[i], db_options);
     putValues[i] = exp->putExperiment();
     getValues[i] = exp->getExperiment();
@@ -38,7 +48,7 @@ int main() {
     std::cout << "Error: Could not open file for writing" << std::endl;
     return 1;
   }
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < arr_size; i++) {
     putFile << std::to_string(sizes[i]) << ", " << putValues[i] << std::endl;
   }
   putFile.close();
@@ -48,7 +58,7 @@ int main() {
     std::cout << "Error: Could not open file for writing" << std::endl;
     return 1;
   }
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < arr_size; i++) {
     getFile << std::to_string(sizes[i]) << ", " << getValues[i] << std::endl;
   }
   getFile.close();
@@ -58,7 +68,7 @@ int main() {
     std::cout << "Error: Could not open file for writing" << std::endl;
     return 1;
   }
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < arr_size; i++) {
     scanFile << std::to_string(sizes[i]) << ", " << scanValues[i].first + ", " + scanValues[i].second << std::endl;
   }
   scanFile.close();
