@@ -20,17 +20,17 @@ class Step1Experiment{
     /**
      * Add entries to the database and time it 
     */
-    void putExperiment();
+    std::string putExperiment();
 
     /**
      * Get entries from database and time it
     */
-    void getExperiment();
+    std::string getExperiment();
 
     /**
      * Delete entries from database and time it
     */
-    void scanExperiment();
+    std::pair<std::string, std::string> scanExperiment();
 
     // /**
     //  * Open Database given the options

@@ -17,7 +17,7 @@ Step1Experiment::Step1Experiment(int size, DatabaseOptions options) {
   db->open(db_name);
 }
 
-void Step1Experiment::putExperiment(){
+std::string Step1Experiment::putExperiment(){
     const int size = 131072;
     int arr[size];
 
@@ -39,13 +39,14 @@ void Step1Experiment::putExperiment(){
     }
 
     std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
-    std::cout << std::fixed << std::setprecision(9) << std::endl;
+    // std::cout << std::fixed << std::setprecision(9) << std::endl;
     double duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
-    std::cout << duration * 1000;
+    // std::cout << duration * 1000;
+    return std::to_string(duration * 1000);
 
 };
 
-void Step1Experiment::getExperiment(){
+std::string Step1Experiment::getExperiment(){
   std::random_device rd;     // Only used once to initialise (seed) engine
   std::mt19937 rng(rd());    // Random-number engine used (Mersenne-Twister in this case)
   std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
@@ -57,13 +58,13 @@ void Step1Experiment::getExperiment(){
     }
   }
 std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
-std::cout << std::fixed << std::setprecision(9) << std::endl;
+// std::cout << std::fixed << std::setprecision(9) << std::endl;
 double duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
-std::cout << duration * 1000;
+return std::to_string(duration * 1000);
 
 }
 
-void Step1Experiment::scanExperiment(){
+std::pair<std::string, std::string> Step1Experiment::scanExperiment(){
   std::random_device rd;     // Only used once to initialise (seed) engine
   std::mt19937 rng(rd());    // Random-number engine used (Mersenne-Twister in this case)
   int total_entries = 0;
@@ -105,9 +106,10 @@ void Step1Experiment::scanExperiment(){
   }
 
   std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
-  std::cout << std::fixed << std::setprecision(9) << std::endl;
+  // std::cout << std::fixed << std::setprecision(9) << std::endl;
   double duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
-  std::cout << duration * 1000 << ", " + std::to_string((duration * 1000) / total_entries) << std::endl;
+  // std::cout << duration * 1000 << ", " + std::to_string((duration * 1000) / total_entries) << std::endl;
+  return std::make_pair (std::to_string(duration * 1000), std::to_string((duration * 1000) / total_entries)); 
 }
 
 void Step1Experiment::closedb() {
