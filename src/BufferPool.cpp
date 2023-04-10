@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cstring>
 
 #include "BufferPool.h"
 #include "utils.h"
@@ -42,7 +43,6 @@ int BufferPool::initialize_directory(int inital_num_buckets) {
     return -1;
   }
 
-  assert(directory.size() == 0);
 
   // Allocate sizeof(Bucket *) * inital_size memory 
   directory.reserve(inital_num_buckets);
