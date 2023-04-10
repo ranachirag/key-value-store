@@ -66,13 +66,13 @@ void Step3Experiment2::run_experiments(int total_mb, int interval_mb) {
     std::uniform_int_distribution<long> uni((k * size), (k + 1) * size * 2);
     startTime = std::chrono::steady_clock::now();
 
-    for(int j = 0; j < 100; ++j) {
+    for(int j = 0; j < 10; ++j) {
       auto rand_int = uni(rng);
       db->get(rand_int);
     }
     elapsedTime = std::chrono::steady_clock::now() - startTime;
     duration = std::chrono::duration_cast< std::chrono::duration< double > >(elapsedTime).count();
-    std::cout << "," << (duration * 1000) / 100;
+    std::cout << "," << (duration * 1000) / 10;
 
     bits_per_entry++;
     db->update_bloom_filter_param(bits_per_entry);
