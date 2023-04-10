@@ -5,6 +5,7 @@
 #include <iostream>
 #include <random>
 #include <algorithm>
+#include <climits>
 
 
 int size_in_mb;
@@ -13,105 +14,92 @@ Database *db;
 Step3Experiment1::Step3Experiment1(int size, DatabaseOptions options) {
   size_in_mb = size;
   db = new Database(options);
-  std::string db_name = "Step3Experiemnt1_" + std::to_string(size) + "MB";
+  std::string db_name = "Step3Experiment1_" + std::to_string(size) + "MB";
   db->open(db_name);
-}
-
-std::string Step3Experiment1::putExperiment(){
-    const int size = 131072;
-    int arr[size];
-
-    // Initialize array values
-    for (int i = 0; i < size; i++) {
-        arr[i] = i + 1;
-    }
-
-    // Shuffle the array randomly
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(arr, arr + size, g);
-
-    std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
-    for (int j = 0; j < size_in_mb; j++){
-      for (int i: arr) {
-        db->put(i + (j * 131072), i);
-      }
-    }
-
-    std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
-    // std::cout << std::fixed << std::setprecision(9) << std::endl;
-    double duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
-    // std::cout << duration * 1000;
-    return std::to_string(duration * 1000);
-
-};
-
-std::string Step3Experiment1::getExperiment(){
-  std::random_device rd;     // Only used once to initialise (seed) engine
-  std::mt19937 rng(rd());    // Random-number engine used (Mersenne-Twister in this case)
-  std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
-  for (int i = 0; i < 1; ++i) {
-    for(int j = 0; j < 10; ++j) {
-      std::uniform_int_distribution<int> uni(0,131072 * size_in_mb);
-      auto rand_int = uni(rng);
-      db->get(rand_int);
-    }
-  }
-std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
-// std::cout << std::fixed << std::setprecision(9) << std::endl;
-double duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
-return std::to_string(duration * 1000);
-
-}
-
-std::pair<std::string, std::string> Step3Experiment1::scanExperiment(){
-  std::random_device rd;     // Only used once to initialise (seed) engine
-  std::mt19937 rng(rd());    // Random-number engine used (Mersenne-Twister in this case)
-  int total_entries = 0;
-  int total_values = 131072 * size_in_mb;
-  int start;
-  int end;
-  const int size = 5;
-  std::pair<long, long> ranges[size];
-
-  // Initialize array values
-  // randomly generate value from 0% to 89% then add 10% and that is your range -- 10%
-  std::uniform_int_distribution<int> dist(0, total_values - (total_values / 10));
-  start = dist(rng);
-  end = start + (total_values / 10);
-  ranges[0] = std::make_pair(start, end);
-  // randomly generate value from 0% to 74% then add 25% and that is your range -- 25%
-  std::uniform_int_distribution<int> dist1(0, total_values - (total_values / 4));
-  start = dist1(rng);
-  end = start + (total_values / 4);
-  ranges[1] = std::make_pair(start, end);
-  // randomly generate value from 0% to 49% then add 50% and that is your range -- 50% 
-  std::uniform_int_distribution<int> dist2(0, total_values - (total_values / 2));
-  start = dist2(rng);
-  end = start + (total_values / 2);
-  ranges[2] = std::make_pair(start, end);
-  // randomly generate value from 0% to 24% then add 75% and that is your range -- 75%
-  // select 0 and 131072 * size_in_mb 
-  std::uniform_int_distribution<int> dist3(0, (total_values / 4));
-  start = dist3(rng);
-  end = start + 3 * (total_values / 4);
-  ranges[3] = std::make_pair(start, end);
-  ranges[4] = std::make_pair(0, total_values);
-  std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
-
-  for (int i = 0; i < 5; i++) {
-    std::vector<std::pair<long, long> > lst;
-    db->scan(lst, ranges[i].first, ranges[i].second);
-    total_entries += ranges[i].second - ranges[i].first;
-  }
-
-  std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
-  // std::cout << std::fixed << std::setprecision(9) << std::endl;
-  double duration = std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
-  // std::cout << duration * 1000 << ", " + std::to_string((duration * 1000) / total_entries) << std::endl;
-  return std::make_pair (std::to_string(duration * 1000), std::to_string((duration * 1000) / total_entries)); 
 }
 
 void Step3Experiment1::closedb() {
   db->close();
+}
+
+
+void Step3Experiment1::run_experiments(int total_mb, int interval_mb) {
+  int num_intervals = total_mb / interval_mb;
+  std::random_device rd0;
+  std::mt19937 g(rd0());
+  int size = interval_mb * 65536;
+  // 4194304
+  long global_min = LONG_MAX;
+  long global_max = LONG_MIN;
+
+  // add and measure time in intervals
+  for (int k = 0; k < num_intervals; k++){
+
+    std::cout << (k + 1) * interval_mb << ",";
+
+    int *arr = (int *) malloc(size * 8);
+    // 3344554432
+
+    for (int i = 0; i < size; i++) {
+        arr[i] = i;
+    }
+
+    std::shuffle(arr, arr + size, g);
+
+
+    std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
+
+    for (int i = 0; i < size; i++){
+      db->put(arr[i] + (k * size) + 1, i);
+    }
+
+    std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
+    double duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
+    std::cout << (duration * 1000) / size;
+  
+    long min_val = k * size + 1;
+    long max_val = (k + 1) * size;
+
+    if (min_val < global_min){
+      global_min = min_val;
+    }
+    if (max_val > global_max){
+      global_max = max_val;
+    }
+    free(arr);
+
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::uniform_int_distribution<long> uni(0, (k + 1) * size);
+    startTime = std::chrono::steady_clock::now();
+
+    for(int j = 0; j < 10; ++j) {
+      auto rand_int = uni(rng);
+      db->get(rand_int);
+    }
+    elapsedTime = ::std::chrono::steady_clock::now() - startTime;
+    duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
+    std::cout << "," << (duration * 1000) / 10;
+
+    // scan 
+
+    std::random_device rd2;
+    std::mt19937 rdm(rd2());
+    std::uniform_int_distribution<long> uni1(0, ((k + 1) * size) / 2);
+    std::uniform_int_distribution<long> uni2(((k + 1) * size) / 2, (k + 1) * size);
+
+    startTime = std::chrono::steady_clock::now();
+    int total_entries = 0;
+
+    std::vector<std::pair<long, long>> lst(0);
+    total_entries = db->scan(lst, global_min, global_max);
+
+
+    elapsedTime = ::std::chrono::steady_clock::now() - startTime;
+    duration = ::std::chrono::duration_cast< ::std::chrono::duration< double >>(elapsedTime).count();
+    std::cout << "," << (duration * 1000) / total_entries;
+
+    std::cout << std::endl;
+    std::cout << "total entries " + std::to_string(lst.size()) + "," << std::to_string(global_min) + "," + std::to_string(global_max) << std::endl;
+  }
 }

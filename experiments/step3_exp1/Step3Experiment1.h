@@ -18,29 +18,18 @@ class Step3Experiment1{
     Database *db;
 
     /**
-     * Add entries to the database and time it 
-    */
-    std::string putExperiment();
-
-    /**
-     * Get entries from database and time it
-    */
-    std::string getExperiment();
-
-    /**
-     * Delete entries from database and time it
-    */
-    std::pair<std::string, std::string> scanExperiment();
-
-    // /**
-    //  * Open Database given the options
-    // */
-    // void opendb(DatabaseOptions options);
-
-    /**
      * Close database
     */
     void closedb();
+
+    /**
+     * Run experiments
+     * 
+     * @param total_mb Number of MB of entries to enter into the database
+     * @param interval_mb Interval to insert and record times
+     */
+    void run_experiments(int total_mb, int interval_mb);
+
 
 };
 

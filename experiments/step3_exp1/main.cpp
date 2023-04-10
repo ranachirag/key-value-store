@@ -34,46 +34,9 @@ int main() {
   db_options.storage_structure = LSM_TREE_STORAGE;
 
   int arr_size = 8;
+  std::cout << "mb_inserted,put_time,get_time,scan_time" << std::endl;
+  Step3Experiment1 *exp = new Step3Experiment1(1024, db_options);
+  exp->run_experiments(1024, 64);
 
-  // int sizes[11] = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048};
-  int sizes[8] = {2, 4, 8, 16, 32, 64, 128, 256};
-  std::string* putValues = new std::string[8];
-  std::string* getValues = new std::string[8];
-  std::pair<std::string, std::string> scanValues[8];
-  for (int i = 0; i < arr_size; i++){
-    Step3Experiment1 *exp = new Step3Experiment1(sizes[i], db_options);
-    putValues[i] = exp->putExperiment();
-    getValues[i] = exp->getExperiment();
-    scanValues[i] = exp->scanExperiment();
-  }
-  std::ofstream putFile("put.txt");
-  if (!putFile.is_open()) {
-    std::cout << "Error: Could not open file for writing" << std::endl;
-    return 1;
-  }
-  for (int i = 0; i < arr_size; i++) {
-    putFile << std::to_string(sizes[i]) << ", " << putValues[i] << std::endl;
-  }
-  putFile.close();
-
-  std::ofstream getFile("get.txt");
-  if (!getFile.is_open()) {
-    std::cout << "Error: Could not open file for writing" << std::endl;
-    return 1;
-  }
-  for (int i = 0; i < arr_size; i++) {
-    getFile << std::to_string(sizes[i]) << ", " << getValues[i] << std::endl;
-  }
-  getFile.close();
-
-  std::ofstream scanFile("scan.txt");
-  if (!scanFile.is_open()) {
-    std::cout << "Error: Could not open file for writing" << std::endl;
-    return 1;
-  }
-  for (int i = 0; i < arr_size; i++) {
-    scanFile << std::to_string(sizes[i]) << ", " << scanValues[i].first + ", " + scanValues[i].second << std::endl;
-  }
-  scanFile.close();
 
 }

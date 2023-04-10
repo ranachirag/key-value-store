@@ -83,15 +83,9 @@ db_options.memtable_size = NUM_BYTES_MB * 1;
 db_options.sst_structure = LIST_SST;
 db_options.storage_structure = APPEND_ONLY_STORAGE;
 
-std::cout << "put_time,get_time,scan_time" << std::endl;
+std::cout << "mb_inserted,put_time,get_time,scan_time" << std::endl;
 Step1Experiment *exp = new Step1Experiment(1024, db_options);
 exp->run_experiments(1024, 64);
 
-// for (int i = 0; i < arr_size; i++){
-//   Step1Experiment *exp = new Step1Experiment(sizes[i], db_options);
-//   putValues[i] = exp->putExperiment();
-//   getValues[i] = exp->getExperiment();
-//   scanValues[i] = exp->scanExperiment();
-// }
 
 }
