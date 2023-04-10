@@ -66,4 +66,14 @@
  */
 #define SIZE_RATIO 2
 
+/**
+ * Use Bits per entry to set Bloom Filter paramters
+ */
+#define BITS_PER_ENTRY "BITS_PER_ENTRY"
+
+/**
+ * Use False positive rate to set Bloom Filter paramters
+ */
+#define FALSE_POSITIVE_RATE "FALSE_POSITIVE_RATE"
+
 #endif

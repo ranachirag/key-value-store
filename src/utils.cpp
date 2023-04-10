@@ -63,7 +63,7 @@ int file_utils::read_block_buffer_pool(BufferPool *buffer_pool, void * &buffer, 
   }
 
   int bytes_read;
-  
+
   std::string hash_key = filepath + "_" + std::to_string(block_num);
 
   int found = buffer_pool->get_data(hash_key, buffer, bytes_read);
@@ -448,3 +448,40 @@ SSTOptions options_utils::level_to_sst(LevelLSMOptions options, std::string file
 
   return sst_options;
 }
+
+// ----------------- Sort Utils -----------------------
+
+bool sort_utils::compare_kv_pair(const std::pair<long, long>& a, const std::pair<long, long>& b) {
+  return a.first < b.first;
+}
+
+
+// ----------------- Bloom Filter Utils -----------------------
+
+int bloom_filter_utils::set_bloom_filter_params(int num_keys, double false_positive_rate, int &num_bits, int &num_hash_funcs) {
+  // Using https://en.wikipedia.org/wiki/Bloom_filter#Optimal_number_of_hash_functions to determine the optimal number of bits and hash functions to use
+  int n = num_keys;
+
+  num_bits = (-1 * n * log(false_positive_rate)) / (log(2) / 2);
+
+  int m = num_bits;
+  int k = (m / n) * log(2);
+
+  num_hash_funcs = k;
+
+  return 0;
+}
+
+int bloom_filter_utils::set_bloom_filter_params(int num_keys, int bits_per_entry, int &num_bits, int &num_hash_funcs) {
+  int n = num_keys;
+
+  num_bits = n * bits_per_entry;
+
+  int m = num_bits;
+  int k = (m / n) * log(2);
+
+  num_hash_funcs = k;
+
+  return 0;
+}
+

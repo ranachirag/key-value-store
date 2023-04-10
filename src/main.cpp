@@ -66,10 +66,11 @@ int main() {
   buf_options.evict_policy = CLOCK_EVICT;
 
   BloomFilterOptions bloom_filter_options;
-  bloom_filter_options.false_positive_rate = 0.1;
+  bloom_filter_options.parameter_setting = BITS_PER_ENTRY;
+  bloom_filter_options.bits_per_entry = 5;
 
   DatabaseOptions db_options;
-  db_options.use_buffer_pool = true;
+  db_options.use_buffer_pool = true; // TODO: Buffer pool not working with LSM TREE 
   db_options.buffer_pool_options = buf_options;
   db_options.memtable_size = 4096;
   db_options.use_bloom_filters = true;
@@ -90,25 +91,40 @@ int main() {
   //   }
   // }
 
-  for (int i = 0; i < 100000; ++i) {
-    // for(int j = 0; j < 131072; ++j) {
-      int key_val = i;
-      kv_store->put(key_val, key_val-2);
-    // }
+  for (int i = -100; i < 100; ++i) {
+      
+      // if(i == 70000) {
+      //   kv_store->remove(500); // TODO: Remove not working 
+      // }
+      // int key_val = i;
+      // kv_store->get(key_val);
+      std::cout << "HERE: " << kv_store->get(i) << std::endl;
   }
 
-  for (int i = -1000; i < 1001; ++i) {
-    int key_val = i;
-    long val = kv_store->get(key_val);
-    std::cout << key_val << ": " << val << std::endl;
-  }
+  
+  // std::cout << "HERE: " << kv_store->remove(5) << std::endl;
+  
 
-  long val = kv_store->get(500);
-  std::cout << "BEFORE DELETE" << ": " << val << std::endl;
+  // std::vector<std::pair<long, long> > vals;
+  // int entries = kv_store->scan(vals, 0, 1000);
+  // std::cout << entries << std::endl;
 
-  kv_store->remove(500);
-  val = kv_store->get(500);
-  std::cout << "AFTER DELETE" << ": " << val << std::endl;
+  // for(std::pair<long, long> pair : vals) {
+  //   std::cout << pair.first << ": " << pair.second << std::endl;
+  // }
+
+
+  // for (int i = -1000; i < 1001; ++i) {
+  //   int key_val = i;
+  //   long val = kv_store->get(key_val);
+  //   std::cout << key_val << ": " << val << std::endl;
+  // }
+
+  // long val = kv_store->get(500);
+  // std::cout << "BEFORE DELETE" << ": " << val << std::endl;
+
+ 
+  // std::cout << "AFTER DELETE" << ": " << val << std::endl;
 
 
 
@@ -126,58 +142,5 @@ int main() {
   kv_store->close();
 
   return 0; 
-
-
-
-
-
-  // BufferPool *buf_pool = new BufferPool(buf_options);
-
-  // for(int i = 0; i < 50; ++i) {
-  //   std::string hash_key = "hash_key" + std::to_string(i);
-  //   std::string* test_data = new std::string("Hello, World!" + std::to_string(i));
-  //   buf_pool->insert_data(hash_key, (void *)test_data);
-  //   std::cout << "INSERT: " << i << std::endl;
-  // }
-  // buf_pool->print_bufpool();
-
-  // for(int i = 0; i < 50; ++i) {
-  //   void* data = nullptr;
-  //   std::string hash_key = "hash_key" + std::to_string(i);
-  //   int found = buf_pool->get_data(data, hash_key);
-  //   if(found == 0) {
-  //     std::string *found_val = (std::string *) data;
-  //     // std::cout << found << std::endl;
-  //     std::cout << *found_val << std::endl;
-  //   }
-    
-  // }
-  // buf_pool->print_bufpool();
-
-  // buf_pool->update_directory_size(32);
-  // buf_pool->print_bufpool();
-
-  // for(int i = 0; i < 50; ++i) {
-  //   std::string hash_key2 = "hash_key2" + std::to_string(i);
-  //   std::string* test_data2 = new std::string("Hello, World!" + std::to_string(i));
-  //   buf_pool->insert_data(hash_key2, (void *)test_data2);
-  //   // std::cout << "INSERT: " << i << std::endl;
-  // }
-  // buf_pool->print_bufpool();
-
-
-
-  // Database *kv_store = new Database(8*1024);
-  // std::string db_name = "step1_experiment_1MB";
-  // kv_store->open(db_name);
-  // // start measuring time here
-  // for (int i = 0; i < 1; ++i) {
-  //   for(int j = 0; j < 131072; ++j) {
-  //     int key_val = i*131072 + j;
-  //     kv_store->put(key_val, key_val);
-  //   }
-  // }
-  // kv_store->close();
-  // // stop measuring time here
 
 }

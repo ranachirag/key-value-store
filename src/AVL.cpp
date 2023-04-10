@@ -7,11 +7,11 @@
 #include "AVL.h"
 #include "Node.h"
 
-AVLTree::AVLTree(bool updates_supported, bool deletes_supported) : updates_supported(updates_supported), deletes_supported(deletes_supported) {
+AVLTree::AVLTree(bool updates_supported) : updates_supported(updates_supported){
   root = NULL;
   size = 0;
-  min_key = std::numeric_limits<long>::infinity();
-  max_key = -std::numeric_limits<long>::infinity();
+  min_key = LONG_MAX;
+  max_key = LONG_MIN;
 }
 
 
@@ -193,9 +193,7 @@ int AVLTree::range_search_nodes(std::vector<std::pair<long, long> > &result, Nod
     
     std::pair<long, long> root_pair (root_node->key, root_node->value);
 
-    if(!(deletes_supported && (root_node->value == LONG_MIN))) {
-      result.push_back(root_pair);
-    }
+    result.push_back(root_pair);    
 
     int r_results = range_search_nodes(result, root_node->r, root_node->key, key2);
 
@@ -211,8 +209,8 @@ int AVLTree::range_search(std::vector<std::pair<long, long> > &result, long key1
 void AVLTree::reset_tree() {
   reset_tree_nodes(root);
   size = 0;
-  min_key = std::numeric_limits<long>::infinity();
-  max_key = -std::numeric_limits<long>::infinity();
+  min_key = LONG_MAX;
+  max_key = LONG_MIN;
 }
 
 Node *AVLTree::get_root() {

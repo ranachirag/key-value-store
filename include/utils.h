@@ -263,3 +263,49 @@ namespace options_utils {
    */
   SSTOptions level_to_sst(LevelLSMOptions options, std::string filepath, int sst_capacity, bool file_exists);
 }
+
+/**
+ * This namespace represents functions dealing with Option structs
+ */
+namespace sort_utils {
+  /**
+   * Compare Key Value pair (for sorting)
+   * 
+   * @param a First Key value pair
+   * @param b Second Key value pair
+   * 
+   * @return true If a's key is less than b's key
+   * @return false If a's key is greater than b's key
+   */
+  bool compare_kv_pair(const std::pair<long, long>& a, const std::pair<long, long>& b);
+}
+
+/**
+ * This namespace represents functions dealing with Bloom Filter
+ */
+namespace bloom_filter_utils {
+
+  /**
+   * Set the Bloom Filter paramters to give the provided False Positive rate
+   * 
+   * @param num_keys Number of keys to be inserted into the Bloom Filter
+   * @param false_positive_rate False positive rate
+   * @param num_bits Number of bits the Bloom Filter uses, parameter to be set
+   * @param num_hash_funcs Number of hash function the Bloom Filter uses, parameter to be set
+   * 
+   * @return 0 if successfull, -1 otherwise
+   */
+  int set_bloom_filter_params(int num_keys, double false_positive_rate, int &num_bits, int &num_hash_funcs);
+
+  /**
+   * Set the Bloom Filter paramters given the number of bits per entry it should use
+   * 
+   * @param num_keys Number of keys to be inserted into the Bloom Filter
+   * @param bits_per_entry Bits per entry
+   * @param num_bits Number of bits the Bloom Filter uses, parameter to be set
+   * @param num_hash_funcs Number of hash function the Bloom Filter uses, parameter to be set
+   * 
+   * @return 0 if successfull, -1 otherwise
+   */
+  int set_bloom_filter_params(int num_keys, int bits_per_entry, int &num_bits, int &num_hash_funcs);
+}

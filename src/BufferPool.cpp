@@ -200,7 +200,6 @@ int BufferPool::get_data(std::string hash_key, void * &data, int &data_size) {
   if(found == 0) {
     eviction_policy->frame_accessed(found_frame);
     
-    // data = found_frame->data;
     data_size = found_frame->data_size;
     memcpy(data, found_frame->data, data_size);
     return 0;

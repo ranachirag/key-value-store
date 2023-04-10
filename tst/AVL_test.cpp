@@ -18,7 +18,7 @@ class AVLTreeTest : public ::testing::Test{
     AVLTreeTest(){};
 
     virtual void SetUp() override {
-      tree = new AVLTree(false, false);
+      tree = new AVLTree(false);
       std::cout << "SetUp called";
     }
 

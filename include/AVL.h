@@ -18,9 +18,8 @@ class AVLTree {
      * Constructor
      * 
      * @param updates_supported Support updates in AVL Tree
-     * @param deletes_supported Support delets in AVL Tree
     */
-    AVLTree(bool updates_supported, bool deletes_supported);
+    AVLTree(bool updates_supported);
 
     /**
      * Insert a key-value pair
@@ -84,14 +83,6 @@ class AVLTree {
     bool updates_supported;
 
     /**
-     * Supports deletes in AVL Tree
-     * 
-     * Note: This is essentially a "pseudo-delete", if value from a search is a Tombstone its value is 
-     *       not returned but it is still contained in the AVL Tree
-     */
-    bool deletes_supported;
-
-    /**
      * The root node of the AVL Tree
     */
     Node *root;
@@ -101,6 +92,8 @@ class AVLTree {
      * 
      * @param root_node Root node of the AVL tree
      * @param key Inserted key causing imbalance 
+     * 
+     * @return Root node of balanced AVL tree
     */
     Node *balance_tree(Node *root_node, long key);
 
@@ -110,6 +103,8 @@ class AVLTree {
      * @param root_node Root node of the AVL tree
      * @param key Key to insert
      * @param value Value to insert
+     * 
+     * @return Root node of AVL Tree containing inserted node
     */
     Node *insert_node(Node *root_node, long key, long value);
 
@@ -118,6 +113,8 @@ class AVLTree {
      * 
      * @param root_node Root node of the AVL tree
      * @param key Key of node to find
+     * 
+     * @return Root node that was found, nullptr otherwise
     */
     Node *find_node(Node *root_node, long key);
     
@@ -127,6 +124,8 @@ class AVLTree {
      * @param root_node Root node of the AVL tree
      * @param key1 Start key of range
      * @param key2 End key of range
+     * 
+     * @return Number of nodes found in the given range
     */
     int range_search_nodes(std::vector<std::pair<long, long> > &result, Node *root_node, long key1, long key2);
 

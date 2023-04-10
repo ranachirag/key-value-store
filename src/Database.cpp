@@ -83,9 +83,9 @@ void Database::open(std::string db_name) {
   }
   
   if(options.storage_structure == LSM_TREE_STORAGE) {
-    memtable = new AVLTree(true, true);
+    memtable = new AVLTree(true);
   } else if(options.storage_structure == APPEND_ONLY_STORAGE) {
-    memtable = new AVLTree(false, false);
+    memtable = new AVLTree(false);
   }
 
 }
@@ -96,7 +96,7 @@ void Database::put(long key, long value) {
     return;
   }
 
-  if((sizeof(key) + memtable->size) > options.memtable_size) {
+  if(memtable->size >= options.memtable_size) {
     std::vector<std::pair<long, long> > lst;
     int lst_size = memtable->range_search(lst, memtable->min_key, memtable->max_key);
     storage->add_to_storage(lst);
@@ -137,12 +137,37 @@ int Database::scan(std::vector<std::pair<long, long> > &result, long key1, long 
     perror("Please open a database first");
     return -1;
   }
-  
-  // Range search Main Memory
-  int kv_range_mem_size = memtable->range_search(result, key1, key2);
 
-  // Range search Storage
-  int kv_range_storage_size = storage->scan_storage(result, key1, key2);
+  int kv_range_mem_size;
+  int kv_range_storage_size;
+  
+  if(options.storage_structure == APPEND_ONLY_STORAGE) {
+    // Range search Main Memory
+    int kv_range_mem_size = memtable->range_search(result, key1, key2);
+
+    // Range search Storage
+    int kv_range_storage_size = storage->scan_storage(result, key1, key2);
+  } else if(options.storage_structure == LSM_TREE_STORAGE) {
+
+    std::vector<std::pair<long, long> > memtable_result;
+
+    // Range search Main Memory
+    int kv_range_mem_size = memtable->range_search(memtable_result, key1, key2);
+
+    kv_range_mem_size = 0;
+    for(std::pair<long, long> pair: memtable_result) {
+      if(pair.second != LONG_MIN) {
+        kv_range_mem_size++;
+        result.push_back(pair);
+      }
+    }
+
+    // Range search Storage - sorted
+    int kv_range_storage_size = storage->scan_storage(result, key1, key2);
+
+    std::sort(result.begin(), result.end(), sort_utils::compare_kv_pair);
+
+  }
 
   return kv_range_mem_size + kv_range_storage_size;
 }
@@ -171,7 +196,9 @@ void Database::close() {
     if(memtable->size > 0) {
       std::vector<std::pair<long, long> > lst;
       int lst_size = memtable->range_search(lst, memtable->min_key, memtable->max_key);
-      storage->add_to_storage(lst);
+      if(lst_size > 0) {
+        storage->add_to_storage(lst);
+      }
     }
     memtable->reset_tree();
     storage->reset();

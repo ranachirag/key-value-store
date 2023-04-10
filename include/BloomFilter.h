@@ -4,12 +4,26 @@
 #include <vector>
 #include <cmath>
 
+#include "DatabaseMacros.h"
+
 /**
  * Bloom Filter Configurations options
  */
 struct BloomFilterOptions {
+  /**
+   * Method used to set the Bloom filter parameters (number of bits and number of hash functions)
+   */
+  std::string parameter_setting;
+
+  /**
+   * Configure bloom filter paramters to ensure given False positivity rate
+   */
   double false_positive_rate;
-  int bits_per_entry; // TODO: Implement
+
+  /**
+   * Bits per entry the bloom filter parameters should be configured to use
+   */
+  int bits_per_entry;
 };
 
 /**
@@ -50,6 +64,7 @@ class BloomFilter {
      * Note: Unused function, used for Bloom Filter persistence which was not implemented
      * 
      * @param arr 
+     * 
      * @return 0 if insert successful, -1 otherwose
      */
     int convert_bits_to_long_array(std::vector<unsigned long> &arr);
@@ -106,6 +121,7 @@ class BloomFilter {
      * Insert a single key into the Bloom Filter
      * 
      * @param key The key to insert
+     * 
      * @return 0 if insert successful, -1 otherwose
      */
     int insert_key(long key);

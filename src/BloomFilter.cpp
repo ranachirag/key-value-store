@@ -7,25 +7,16 @@
 
 #include "xxhash.h"
 #include "BloomFilter.h"
+#include "utils.h"
 
-
-int caclulate_bloom_filter_params(int num_keys, double false_positive_rate, int &num_bits, int &num_hash_funcs) {
-  int n = num_keys;
-
-  num_bits = (-1 * n * log(false_positive_rate)) / (log(2) / 2);
-
-  int m = num_bits;
-  int k = (m / n) * log(2);
-
-  num_hash_funcs = k;
-
-  return 0;
-}
 
 BloomFilter::BloomFilter(int num_keys, BloomFilterOptions options) : options(options) {
-  // Using https://en.wikipedia.org/wiki/Bloom_filter#Optimal_number_of_hash_functions to determine the optimal number of bits and hash functions to use
   
-  caclulate_bloom_filter_params(num_keys, options.false_positive_rate, num_bits, num_hash_funcs);
+  if(options.parameter_setting == FALSE_POSITIVE_RATE) {
+    bloom_filter_utils::set_bloom_filter_params(num_keys, options.false_positive_rate, num_bits, num_hash_funcs);
+  } else if(options.parameter_setting == BITS_PER_ENTRY) {
+    bloom_filter_utils::set_bloom_filter_params(num_keys, options.bits_per_entry, num_bits, num_hash_funcs);
+  }
 
   bits = std::vector<bool>(num_bits, false);
 

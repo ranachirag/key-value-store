@@ -148,26 +148,50 @@ int ListSST::read_block(void * &buffer, long block_num){
     return 0;
   }
   int bytes_read;
-  if(options.use_buffer_pool) {
-    bytes_read = file_utils::read_block_buffer_pool(options.buffer_pool, buffer, options.filepath, block_num);
-  } else {
+  
+  // TODO: Bug, buffer pool does not work when this function is called to merge SST for LSM Tree
+  //       For now, use normal read_block
+
+  // if(options.use_buffer_pool) {
+  //   bytes_read = file_utils::read_block_buffer_pool(options.buffer_pool, buffer, options.filepath, block_num);
+  // } else {
     bytes_read = file_utils::read_block(buffer, options.filepath, block_num);
-  }
+  // }
 
   return bytes_read / (KEY_SIZE + VALUE_SIZE);
+}
+
+int ListSST::load_bloom_filter() {
+  void *buffer;
+  int error_code = posix_memalign(&buffer, BLOCK_SIZE, BLOCK_SIZE);
+  if(error_code != 0) {
+    perror("Could not allocate buffer");
+    return -1;
+  }
+  int block_num = 0;
+  std::vector<std::pair<long, long>> data;
+  int num_entries = read_block(buffer, block_num);
+  while (num_entries > 0) {
+    data = file_utils::reintrepret_buffer(buffer, num_entries * (VALUE_SIZE + KEY_SIZE));
+    bloom_filter->insert_keys(data);
+    block_num++;
+    num_entries = read_block(buffer, block_num);
+  }
+  bloom_filter_loaded = true;
+  free(buffer);
 }
 
 long ListSST::search(long key, bool &val_found) {
   val_found = false;
 
   if(options.use_bloom_filter) {
-    if(bloom_filter_loaded) {
-      bool bloom_contains_key = bloom_filter->contains_key(key);
-      if(!bloom_contains_key) {
-        return -1;
-      }
-    } else {
-      // TODO: Go through entire SST file and load in bloom filter
+    if(!bloom_filter_loaded) {
+      // Go through entire SST file and load in bloom filter
+      load_bloom_filter();
+    }
+    bool bloom_contains_key = bloom_filter->contains_key(key);
+    if(!bloom_contains_key) {
+      return -1;
     }
   }
 
@@ -215,7 +239,6 @@ int ListSST::scan(std::vector<std::pair<long, long> > &result, long key1, long k
   int scan_result_size = 0;
 
   long num_blocks = get_num_blocks();
-
   
   // Binary search to find first block containing range
   long block_containing_key = search_utils::binary_search_range_blocks(options.filepath, num_blocks, key1, key2);
@@ -232,7 +255,7 @@ int ListSST::scan(std::vector<std::pair<long, long> > &result, long key1, long k
 
     bytes_read = file_utils::read_block(buffer, options.filepath, block_containing_key);
 
-    std::vector<std::pair<long, long> > key_values = file_utils::reintrepret_buffer(buffer, bytes_read);
+    std::vector<std::pair<long, long>> key_values = file_utils::reintrepret_buffer(buffer, bytes_read);
 
     // Search every pair in the blocks for the range (starting from the first block that contains the range)
     long block_containing_range = block_containing_key;

@@ -152,23 +152,45 @@ class LevelLSM {
     /**
      * Search a value in the current LSM tree level and the levels below (if any exist)
      * 
-     * @param key =
-     * @param val_found 
-     * @return long 
+     * @param key Key to search for
+     * @param val_found Set to true if value is found, set to false otherwise
+     * 
+     * @return Value if found, -1 otherwise 
      */
     long get_value(long key, bool &val_found);
 
+    SST *get_sst();
+
+    LevelLSM *next_level;
+
   private:
     /**
-     * Compact the 
+     * Compact the SSTs and push to LSM Tree level below
      * 
-     * @return int 
+     * @return 0 if successful, -1 otherwise 
      */
     int compact_SSTs();
+
+    /**
+     * Determine the filepath of the SST file(s) in the LSM Tree level
+     * 
+     * @param level_num The LSM Tree level number
+     * @param sst_num The age of the SST in the LSM Tree level
+     * 
+     * @return Filepath of the
+     */
     std::string level_LSM_filepath(int level_num, int sst_num);
+
+    /**
+     * LSM Tree level configuration options
+     */
     LevelLSMOptions options;
+
+    /**
+     * @brief 
+     * 
+     */
     std::vector<SST *> SSTs;
-    LevelLSM *next_level;
 };
 
 /**

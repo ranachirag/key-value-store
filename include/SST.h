@@ -54,7 +54,6 @@ struct SSTOptions {
  */
 class SST {
   public: 
-
     /**
      * Destroy the SST object
      */
@@ -142,6 +141,16 @@ class ListSST : public SST {
     long get_num_blocks();
     long get_num_entries();
   private:
+
+    /**
+     * Insert all keys contained in the SST file into the Bloom Filter
+     * 
+     * Note: Since Bloom Filter is not being persisted, we have to load in data manually into the Bloom Filter
+     * 
+     * @return 0 if successfully loaded, -1 otherwise
+     */
+    int load_bloom_filter();
+
     /**
      * SST configurations
      */

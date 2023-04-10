@@ -101,14 +101,14 @@ int LevelLSM::compact_SSTs() {
 
   std::vector<std::pair<long, long>> old_vals{};
   if(old_sst_num_entries > 0) {
-    old_vals = file_utils::reintrepret_buffer(old_sst_blk, old_sst_num_entries * (sizeof(long) * 2));
+    old_vals = file_utils::reintrepret_buffer(old_sst_blk, old_sst_num_entries * (KEY_SIZE + VALUE_SIZE));
   } else {
     old_sst_reached_end = true;
   }
 
   std::vector<std::pair<long, long>> new_vals{};
   if(new_sst_num_entries > 0) {
-    new_vals = file_utils::reintrepret_buffer(new_sst_blk, new_sst_num_entries * (sizeof(long) * 2));
+    new_vals = file_utils::reintrepret_buffer(new_sst_blk, new_sst_num_entries * (KEY_SIZE + VALUE_SIZE));
   } else {
     new_sst_reached_end = true;
   }
@@ -122,7 +122,7 @@ int LevelLSM::compact_SSTs() {
 
     int old_sst_key;
     if(!old_sst_reached_end) {
-      old_sst_key = old_vals[j].first;
+      old_sst_key = old_vals[i].first;
     }
 
     int new_sst_key;
@@ -171,7 +171,7 @@ int LevelLSM::compact_SSTs() {
       old_sst_num_entries = old_sst_obj->read_block(old_sst_blk, old_blk_num);
       i = 0;
       if(old_sst_num_entries > 0) {
-        old_vals = file_utils::reintrepret_buffer(old_sst_blk, old_sst_num_entries * (sizeof(long) * 2));
+        old_vals = file_utils::reintrepret_buffer(old_sst_blk, old_sst_num_entries * (KEY_SIZE + VALUE_SIZE));
       } else {
         old_sst_reached_end = true;
       }
@@ -183,8 +183,7 @@ int LevelLSM::compact_SSTs() {
       new_sst_num_entries = new_sst_obj->read_block(new_sst_blk, new_blk_num);
       j = 0;
       if(new_sst_num_entries > 0) {
-        new_vals = file_utils::reintrepret_buffer(new_sst_blk, new_sst_num_entries * (sizeof(long) * 2));
-    
+        new_vals = file_utils::reintrepret_buffer(new_sst_blk, new_sst_num_entries * (KEY_SIZE + VALUE_SIZE));
       } else {
         new_sst_reached_end = true;
       }
@@ -266,6 +265,10 @@ long LevelLSM::get_value(long key, bool &val_found) {
   for (SST *sst: SSTs) {
     val = sst->search(key, val_found);
     if(val_found) {
+      if(val == LONG_MIN) {
+        val_found = false;
+        return -1;
+      }
       return val;
     }
   }
@@ -276,6 +279,13 @@ long LevelLSM::get_value(long key, bool &val_found) {
   
   val_found = false;
   return -1;
+}
+
+SST *LevelLSM::get_sst() {
+  if (num_ssts() > 0) {
+    return SSTs[0];
+  }
+  return nullptr;
 }
 
 
@@ -303,9 +313,109 @@ long StorageLSM::get_value(long key, bool &val_found) {
 
 
 int StorageLSM::scan_storage(std::vector<std::pair<long, long> > &result, long key1, long key2) {
+  std::vector<void *> buffs;
+  std::vector<SST *> level_ssts;
+  std::vector<int> indices;
+  std::vector<int> buff_sizes;
+  std::vector<int> block_nums;
 
+  LevelLSM *curr = first_level;
+  while(curr != nullptr) {
+    if(curr->num_ssts() > 0) {
+      
+      void *buf_blk;
+      int error_code = posix_memalign(&buf_blk, BLOCK_SIZE, BLOCK_SIZE);
+      if(error_code != 0) {
+        perror("Could not allocate buffer");
+        return -1;
+      }
+
+      SST *sst_to_read = curr->get_sst();
+      int num_entries = sst_to_read->read_block(buf_blk, 0);
+
+      block_nums.push_back(0);
+      level_ssts.push_back(sst_to_read);
+      buff_sizes.push_back(num_entries * (KEY_SIZE + VALUE_SIZE));
+      buffs.push_back(buf_blk);
+      indices.push_back(0);
+    }
+    curr = curr->next_level;
+  }
+  int num_found = 0;
+  int counter = key1;
+
+  while (counter <= key2) {
+    bool found_counter = false;
+
+    // Check all levels for counter 
+    for(int i = 0; i < buffs.size(); ++i) {
+      
+      bool stop_counter = false;
+      while (!stop_counter) {
+        int index = indices[i];
+        if(index == -1) {
+          break;
+        }
+        void *buffer = buffs[i];
+        int buffer_bytes = buff_sizes[i];
+        SST *sst = level_ssts[i];
+        std::vector<std::pair<long, long>> key_values = file_utils::reintrepret_buffer(buffer, buffer_bytes);
+        
+        std::pair<long, long> entry_to_check = key_values[index];
+
+        if(entry_to_check.first > counter) {
+          stop_counter = true;
+        } else if(entry_to_check.first == counter) {
+          
+          if(entry_to_check.second != LONG_MIN) {
+            result.push_back(entry_to_check);
+            num_found++;
+          }
+
+          found_counter = true;
+          indices[i]++;
+        } else {
+          indices[i]++;
+        }
+
+        if(index == key_values.size()) {
+          block_nums[i]++;
+          int num_entries_read = sst->read_block(buffer, block_nums[i]);
+          if(num_entries_read > 0) {
+            indices[i] = 0;
+          } else {
+            // Reached end of SST, no more checking
+            indices[i] = -1;
+            break;
+          }
+        }
+
+      }
+
+       if(found_counter) {
+        // Found counter, no need to check later levels as current level would have latest value
+        break;
+      }
+    }
+    counter++;
+  }
+
+  for(int i = 0; i < buffs.size(); ++i) {
+    void *buf = buffs[i];
+    free(buf);
+    buffs[i] = nullptr;
+  }
+  return num_found;
 }
 
 void StorageLSM::reset() {
+  LevelLSM *curr = first_level;
+  while (curr != nullptr) {
+    LevelLSM *level_to_delete = curr;
+    curr = curr->next_level;
 
+    SST *sst_to_delete = level_to_delete->get_sst();
+    delete sst_to_delete;
+    delete level_to_delete;
+  }
 }
