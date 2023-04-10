@@ -56,7 +56,7 @@ int file_utils::read_block(void * &buffer, std::string filepath, long block_num)
 }
 
 int file_utils::read_block_buffer_pool(BufferPool *buffer_pool, void * &buffer, std::string filepath, long block_num) {
-  int fd = open(filepath.c_str(), O_RDONLY | O_CREAT); // Add O_DIRECT Flag
+  int fd = open(filepath.c_str(), O_RDONLY | O_CREAT | O_DIRECT); // Add O_DIRECT Flag
 
   if (fd ==-1) {
       perror("Error opening file");
