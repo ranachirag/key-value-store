@@ -76,6 +76,7 @@ void Step3Experiment2::run_experiments(int total_mb, int interval_mb) {
 
     bits_per_entry++;
     db->update_bloom_filter_param(bits_per_entry);
-   
+
+    std::cout << std::endl;
   }
 }
