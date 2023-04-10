@@ -244,7 +244,7 @@ int ListSST::scan(std::vector<std::pair<long, long> > &result, long key1, long k
   long block_containing_key = search_utils::binary_search_range_blocks(options.filepath, num_blocks, key1, key2);
   
   if(block_containing_key >= 0) {
-
+    
     void *buffer;
     int error_code = posix_memalign(&buffer, BLOCK_SIZE, BLOCK_SIZE);
     if(error_code != 0) {
@@ -265,7 +265,10 @@ int ListSST::scan(std::vector<std::pair<long, long> > &result, long key1, long k
       for(int i = 0; i < key_values.size(); i++) {
         if((key_values[i].first <= key2)) {
           if(key_values[i].first >= key1) {
-            result.push_back(key_values[i]);
+            std::pair<long, long> kv;
+            kv.first = key_values[i].first;
+            kv.second = key_values[i].second;
+            result.push_back(kv);
             scan_result_size++;
           }
         } else {

@@ -82,12 +82,11 @@ long StorageAppendOnly::get_value(long key, bool &val_found) {
 }
 
 int StorageAppendOnly::scan_storage(std::vector<std::pair<long, long> > &result,long key1, long key2) {
-  int scan_size;
+  int scan_size = 0;
   for (auto it = SSTs.rbegin(); it != SSTs.rend(); ++it){
     SST *sst = *it;
     scan_size += sst->scan(result, key1, key2);
   }
-
   return scan_size;
 }
 

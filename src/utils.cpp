@@ -187,7 +187,7 @@ long search_utils::binary_search_range_blocks(std::string filepath, long num_blo
     perror("Could not allocate buffer");
     return -1;
   }
-  int bytes_read;
+  int bytes_read = 0;
 
   std::vector<std::pair<long, long> > values;
   
@@ -200,12 +200,14 @@ long search_utils::binary_search_range_blocks(std::string filepath, long num_blo
     min_key_block = values[0].first;
     max_key_block = values.back().first;
     if (key2 < min_key_block) {
+      // if the upper key is less than the smallest key, need to search lower blocks
       end_block = block_to_read - 1;
     } else if (key1 > max_key_block) {
+      // if the lower key is greater than the largest key, need to search higher blocks
       start_block = block_to_read + 1;
     } else {
       free(buffer);
-      return block_to_read;
+      return start_block;
     }
   }
   free(buffer);

@@ -138,21 +138,22 @@ int Database::scan(std::vector<std::pair<long, long> > &result, long key1, long 
     return -1;
   }
 
-  int kv_range_mem_size;
-  int kv_range_storage_size;
+  int kv_range_mem_size = 0;
+  int kv_range_storage_size = 0;
   
   if(options.storage_structure == APPEND_ONLY_STORAGE) {
     // Range search Main Memory
-    int kv_range_mem_size = memtable->range_search(result, key1, key2);
+    kv_range_mem_size = memtable->range_search(result, key1, key2);
 
     // Range search Storage
-    int kv_range_storage_size = storage->scan_storage(result, key1, key2);
+    kv_range_storage_size = storage->scan_storage(result, key1, key2);
+
   } else if(options.storage_structure == LSM_TREE_STORAGE) {
 
     std::vector<std::pair<long, long> > memtable_result;
 
     // Range search Main Memory
-    int kv_range_mem_size = memtable->range_search(memtable_result, key1, key2);
+    kv_range_mem_size = memtable->range_search(memtable_result, key1, key2);
 
     kv_range_mem_size = 0;
     for(std::pair<long, long> pair: memtable_result) {
@@ -163,7 +164,7 @@ int Database::scan(std::vector<std::pair<long, long> > &result, long key1, long 
     }
 
     // Range search Storage - sorted
-    int kv_range_storage_size = storage->scan_storage(result, key1, key2);
+    kv_range_storage_size = storage->scan_storage(result, key1, key2);
 
     std::sort(result.begin(), result.end(), sort_utils::compare_kv_pair);
 
