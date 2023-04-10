@@ -15,7 +15,7 @@
  */
 struct DatabaseOptions {
   /**
-   * The maximum size of the memtable
+   * The maximum size of the memtable (in bytes)
   */
   long memtable_size;
 

@@ -28,7 +28,7 @@ int ClockEvictionPolicy::frame_accessed(Frame *frame) {
   frame->eviction_metadata = one;
 }
 
-int ClockEvictionPolicy::evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length) {
+int ClockEvictionPolicy::evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length,  int &dir_size_bytes) {
   if(clock_handle == nullptr) {
     perror("No frame intialized");
     return -1;
@@ -61,7 +61,7 @@ int ClockEvictionPolicy::evict_frame(std::vector<Bucket*> directory, int directo
   buffer_pool_utils::find_next_frame(directory, directory_size, clock_handle, curr_bucket_num);
 
   // Delete frame from bucket
-  buffer_pool_utils::delete_frame(directory, directory_size, frame_to_evict_bucket, frame_to_evict);
+  buffer_pool_utils::delete_frame(directory, directory_size, dir_size_bytes, frame_to_evict_bucket, frame_to_evict);
   
   return 0;
 }
@@ -109,7 +109,7 @@ int LRUEvictionPolicy::frame_accessed(Frame *frame) {
   return 0;
 }
 
-int LRUEvictionPolicy::evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length) {
+int LRUEvictionPolicy::evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length,  int &dir_size_bytes) {
   if(front == nullptr) {
     perror("No frame to evict");
     return -1;
@@ -127,7 +127,7 @@ int LRUEvictionPolicy::evict_frame(std::vector<Bucket*> directory, int directory
   Bucket *frame_to_evict_bucket = directory[bucket_offset];
 
   // Delete frame from bucket
-  buffer_pool_utils::delete_frame(directory, directory_size, frame_to_evict_bucket, frame_to_evict);
+  buffer_pool_utils::delete_frame(directory, directory_size, dir_size_bytes, frame_to_evict_bucket, frame_to_evict);
 
   return 0;
 }

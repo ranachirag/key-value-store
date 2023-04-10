@@ -4,7 +4,7 @@ file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true *.h *.cpp)
 
 set(SOURCES ${SOURCES})
 
-add_executable(${BINARY}_experiments ${SOURCES})
+add_executable(${BINARY}_step1_exp1 ${SOURCES})
 
-target_link_libraries(${BINARY}_experiments PRIVATE ${BINARY}_lib)
+target_link_libraries(${BINARY}_step1_exp1 PRIVATE ${BINARY}_lib)
 

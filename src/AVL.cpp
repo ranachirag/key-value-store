@@ -151,7 +151,7 @@ void AVLTree::reset_tree_nodes(Node *&root_node) {
 
 void AVLTree::insert(long key, long value) {
   root = insert_node(root, key, value);
-  size += VALUE_SIZE;
+  size += VALUE_SIZE + KEY_SIZE;
   if (key < min_key) {
     min_key = key;
   }

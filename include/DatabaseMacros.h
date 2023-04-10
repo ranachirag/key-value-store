@@ -76,4 +76,6 @@
  */
 #define FALSE_POSITIVE_RATE "FALSE_POSITIVE_RATE"
 
+#define NUM_BYTES_MB 1048576
+
 #endif

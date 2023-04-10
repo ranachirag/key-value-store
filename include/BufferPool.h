@@ -26,6 +26,12 @@ struct BufferPoolOptions {
   int max_size = 2048; // 256 4 kB blocks, equivalent to 8 MB
 
   /**
+   * The maximum number of bytes that can be allocated for the Buffer
+   * Note: max_size_bytes should be less than max_size number the number of 4KB pages (in terms of bytes)
+   */
+  int max_size_bytes;
+
+  /**
    * Eviction policy the Buffer pool uses.
    * Can only be "CLOCK" or "LRU"
    */
@@ -107,6 +113,12 @@ class BufferPool {
      * TODO: Remove this ?
      */
     int dir_size_bytes;
+
+    /**
+     * The maximum number of bytes that can be allocated for pages stored in the Buffer Pool
+     * 
+     */
+    int max_dir_size_bytes;
 
     /**
      * The number of frames in the directory

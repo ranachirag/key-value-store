@@ -43,12 +43,13 @@ class EvictionPolicy  {
      * Select frame to evict and remove that frame from the buffer pool directory using eviction policy algorithm
      * 
      * @param directory Buffer Pool directory
-     * @param directory_size Size of the Buffer Pool directory
+     * @param directory_size Size of the Buffer Pool directory (in number of buckets)
      * @param prefix_length Number of prefix bits of the hash value used to index into the Directory
+     * @param dir_size_bytes Size of the Buffer Pool directory (in bytes)
      * 
      * @return 0 if frame evicted successfully, -1 otherwise
      */
-    virtual int evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length) = 0;
+    virtual int evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length, int &dir_size_bytes) = 0;
 
     /**
      * This function is called when a frame is accessed, update metadata used by eviction policy algorithm
@@ -83,12 +84,13 @@ class ClockEvictionPolicy : public EvictionPolicy {
      * Evict a frame using the Clock Eviction algorithm
      * 
      * @param directory Buffer Pool directory
-     * @param directory_size Size of the Buffer Pool directory
+     * @param directory_size Size of the Buffer Pool directory (in number of buckets)
      * @param prefix_length Number of prefix bits of the hash value used to index into the Buffer Pool directory
+     * @param dir_size_bytes Size of the Buffer Pool directory (in bytes)
      * 
      * @return 0 if successful, -1 otherwise
      */
-    int evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length);
+    int evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length, int &dir_size_bytes);
 
     /**
      * This function is called when a frame is accessed, update frame metadata
@@ -143,12 +145,13 @@ class LRUEvictionPolicy : public EvictionPolicy {
      * Evict a frame using the LRU Eviction algorithm
      * 
      * @param directory Buffer Pool directory
-     * @param directory_size Size of the Buffer Pool directory
+     * @param directory_size Size of the Buffer Pool directory (in number of buckets)
      * @param prefix_length Number of prefix bits of the hash value used to index into the Buffer Pool directory
+     * @param dir_size_bytes Size of the Buffer Pool directory (in bytes)
      * 
      * @return 0 if successful, -1 otherwise
      */
-    int evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length);
+    int evict_frame(std::vector<Bucket*> directory, int directory_size, int prefix_length, int &dir_size_bytes);
 
     /**
      * This function is called when a frame is accessed, update frame metadata

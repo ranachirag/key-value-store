@@ -305,7 +305,7 @@ int buffer_pool_utils::insert_frame(Bucket *bucket, Frame *frame_to_insert) {
   return -1;
 }
 
-int buffer_pool_utils::delete_frame(std::vector<Bucket *> directory, int directory_size, Bucket *bucket, Frame *frame) {
+int buffer_pool_utils::delete_frame(std::vector<Bucket *> directory, int directory_size, int &dir_size_bytes, Bucket *bucket, Frame *frame) {
   Frame *curr_frame = bucket->frame;
   bool found_frame = false;
 
@@ -336,10 +336,10 @@ int buffer_pool_utils::delete_frame(std::vector<Bucket *> directory, int directo
   }
 
   if(found_frame) {
+    dir_size_bytes -= frame->data_size;
     free(frame->data);
     frame->data = nullptr;
-    // delete frame;
-
+    delete frame;
   }
 
   return 0;

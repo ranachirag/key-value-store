@@ -19,6 +19,7 @@ BufferPool::BufferPool(BufferPoolOptions options) {
   dir_size_bytes = 0;
   num_frames = 0;
   max_num_buckets = options.max_size;
+  max_dir_size_bytes = options.max_size_bytes;
 
   // Initialize Eviction Policy
   if (options.evict_policy == CLOCK_EVICT) {
@@ -131,6 +132,14 @@ int BufferPool::rehash_bucket(Bucket *bucket) {
 
 int BufferPool::insert_data(std::string hash_key, void *data, int data_size) {
 
+    // Need to evict frames
+  if(dir_size_bytes > max_dir_size_bytes) {
+    while ((dir_size_bytes + data_size) > max_dir_size_bytes) {
+      eviction_policy->evict_frame(directory, num_buckets, prefix_length, dir_size_bytes);
+      num_frames--;
+    }
+  }
+
   // Check if insertion would cause an expansion, pass in load factor
   bool expand = BufferPool::expansion_required(LOAD_FACTOR_THRESHOLD);
   
@@ -147,10 +156,11 @@ int BufferPool::insert_data(std::string hash_key, void *data, int data_size) {
     } else {
       // Expansion criteria is met but directory reached max size, means directory is at max capacity
       // Evict frame
-      eviction_policy->evict_frame(directory, num_buckets, prefix_length);
+      eviction_policy->evict_frame(directory, num_buckets, prefix_length, dir_size_bytes);
       num_frames--;
     }
   }
+
 
   Bucket *insert_into_bucket = buffer_pool_utils::get_bucket(directory, prefix_length, hash_key);
 
@@ -168,6 +178,7 @@ int BufferPool::insert_data(std::string hash_key, void *data, int data_size) {
 
   // increment num_frames
   num_frames++;
+  dir_size_bytes += data_size;
 
   eviction_policy->frame_created(frame_to_insert);
 
@@ -218,7 +229,7 @@ int BufferPool::update_directory_size(int new_max_size) {
 
       // Evict frames
       for (int i = 0; i < num_frames_to_evict; ++i) {
-        eviction_policy->evict_frame(directory, num_buckets, prefix_length);
+        eviction_policy->evict_frame(directory, num_buckets, prefix_length, dir_size_bytes);
         num_frames--;
       }
 

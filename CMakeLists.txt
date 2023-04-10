@@ -17,4 +17,5 @@ include_directories(src)
 
 add_subdirectory(src)
 add_subdirectory(tst)
-add_subdirectory(experiments)
+add_subdirectory(experiments/step1_exp1)
+add_subdirectory(experiments/step3_exp1)

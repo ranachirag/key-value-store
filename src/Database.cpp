@@ -42,7 +42,7 @@ void Database::open(std::string db_name) {
   storage_options.sst_structure = options.sst_structure;
   storage_options.use_bloom_filters = options.use_bloom_filters;
   storage_options.bloom_filter_options = options.bloom_filter_options;
-  storage_options.memtable_capacity = options.memtable_size / VALUE_SIZE; // Memtable size is in terms of bytes
+  storage_options.memtable_capacity = options.memtable_size / (VALUE_SIZE + KEY_SIZE); // Memtable size is in terms of bytes
 
   if (stat(db_name_chr, &dir_info) == 0 && (dir_info.st_mode & S_IFDIR) != 0) {
     // Dir exists, read SSTs

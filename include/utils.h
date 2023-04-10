@@ -208,13 +208,14 @@ namespace buffer_pool_utils {
    * Delete a frame from the directory
    * 
    * @param directory Directory
-   * @param directory_size Size of the directory
+   * @param directory_size Size of the directory (in number of buckets)
+   * @param dir_size_bytes Size of the directory (in bytes)
    * @param bucket Hash bucket to delete frame from
    * @param frame Frame to delete
    * 
    * @return 0 if successfuly, -1 otherwise
    */
-  int delete_frame(std::vector<Bucket *> directory, int directory_size, Bucket *bucket, Frame *frame);
+  int delete_frame(std::vector<Bucket *> directory, int directory_size, int &dir_size_bytes, Bucket *bucket, Frame *frame);
 
   /**
    * Algorithm that iterates through the directory (Clock algorithm)
@@ -257,7 +258,9 @@ namespace options_utils {
    * Generates configuration options for a SST object, given a LSM Tree level configuration 
    * 
    * @param options LSM Tree level configuration options 
-   * @param size_ratio The size ratio of SST file sizes between levels
+   * @param filepath File path of the SST file
+   * @param sst_capacity Capacity of the SST file (maximum number of entries it can hold)
+   * @param file_exists True if the file for the SST object exists, false otherwise
    * 
    * @return SST configuration options
    */
