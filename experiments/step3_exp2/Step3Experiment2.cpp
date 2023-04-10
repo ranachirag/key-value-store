@@ -6,6 +6,7 @@
 #include <random>
 #include <algorithm>
 #include <climits>
+#include <chrono>
 
 
 int size_in_mb;
@@ -54,8 +55,8 @@ void Step3Experiment2::run_experiments(int total_mb, int interval_mb) {
       db->put(arr[i] + (k * size) + 1, i);
     }
 
-    std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
-    double duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
+    std::chrono::steady_clock::duration elapsedTime = std::chrono::steady_clock::now() - startTime;
+    double duration = std::chrono::duration_cast< std::chrono::duration< double > >(elapsedTime).count();
     // std::cout << (duration * 1000) / size;
   
     free(arr);
@@ -69,8 +70,8 @@ void Step3Experiment2::run_experiments(int total_mb, int interval_mb) {
       auto rand_int = uni(rng);
       db->get(rand_int);
     }
-    elapsedTime = ::std::chrono::steady_clock::now() - startTime;
-    duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
+    elapsedTime = std::chrono::steady_clock::now() - startTime;
+    duration = std::chrono::duration_cast< std::chrono::duration< double > >(elapsedTime).count();
     std::cout << "," << (duration * 1000) / 100;
 
     bits_per_entry++;
