@@ -14,7 +14,7 @@ Database *db;
 Step1Experiment::Step1Experiment(int size, DatabaseOptions options) {
   size_in_mb = size;
   db = new Database(options);
-  std::string db_name = "Step1Experiemnt_" + std::to_string(size) + "MB";
+  std::string db_name = "Step1Experiment_" + std::to_string(size) + "MB";
   db->open(db_name);
 }
 
@@ -100,6 +100,6 @@ void Step1Experiment::run_experiments(int total_mb, int interval_mb) {
     std::cout << "," << (duration * 1000) / total_entries;
 
     std::cout << std::endl;
-    // std::cout << "total entries " + std::to_string(lst.size()) + "," << std::to_string(global_min) + "," + std::to_string(global_max) << std::endl;
+    std::cout << "total entries " + std::to_string(lst.size()) + "," << std::to_string(global_min) + "," + std::to_string(global_max) << std::endl;
   }
 }
