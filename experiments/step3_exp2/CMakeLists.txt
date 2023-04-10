@@ -1,0 +1,10 @@
+set(BINARY ${CMAKE_PROJECT_NAME})
+
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true *.h *.cpp)
+
+set(SOURCES ${SOURCES})
+
+add_executable(${BINARY}_step1_exp1 ${SOURCES})
+
+target_link_libraries(${BINARY}_step1_exp1 PRIVATE ${BINARY}_lib)
+
