@@ -42,6 +42,14 @@ class Step1Experiment{
     */
     void closedb();
 
+    /**
+     * Run experiments
+     * 
+     * @param total_mb Number of MB of entries to enter into the database
+     * @param interval_mb Interval to insert and record times
+     */
+    void run_experiments(int total_mb, int interval_mb);
+
 };
 
 #endif
