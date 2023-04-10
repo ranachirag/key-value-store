@@ -215,3 +215,10 @@ void Database::close() {
     db_open = false;
   }
 }
+
+
+void Database::update_bloom_filter_param(int bits_per_entry) {
+  if(options.use_bloom_filters) {
+    storage->update_bloom_filter_param(bits_per_entry);
+  }
+}

@@ -1,4 +1,4 @@
-#include "Step1Experiment.h"
+#include "Step3Experiment2.h"
 #include "BufferPool.h"
 #include "Database.h"
 #include <iomanip>
@@ -18,17 +18,18 @@ Step3Experiment2::Step3Experiment2(int size, DatabaseOptions options) {
   db->open(db_name);
 }
 
-void Step1Experiment::closedb() {
+void Step3Experiment2::closedb() {
   db->close();
 }
 
+int bits_per_entry = 5;
 
-void Step1Experiment::run_experiments(int total_mb, int interval_mb) {
+void Step3Experiment2::run_experiments(int total_mb, int interval_mb) {
   int num_intervals = total_mb / interval_mb;
   std::random_device rd0;
   std::mt19937 g(rd0());
   int size = interval_mb * 65536;
-  // 4194304
+  
   long global_min = LONG_MAX;
   long global_max = LONG_MIN;
 
@@ -36,9 +37,9 @@ void Step1Experiment::run_experiments(int total_mb, int interval_mb) {
   for (int k = 0; k < num_intervals; k++){
 
     std::cout << (k + 1) * interval_mb << ",";
+    std::cout << bits_per_entry << ",";
 
     int *arr = (int *) malloc(size * 8);
-    // 3344554432
 
     for (int i = 0; i < size; i++) {
         arr[i] = i;
@@ -55,51 +56,25 @@ void Step1Experiment::run_experiments(int total_mb, int interval_mb) {
 
     std::chrono::steady_clock::duration elapsedTime = ::std::chrono::steady_clock::now() - startTime;
     double duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
-    std::cout << (duration * 1000) / size;
+    // std::cout << (duration * 1000) / size;
   
-    long min_val = k * size + 1;
-    long max_val = (k + 1) * size;
-
-    if (min_val < global_min){
-      global_min = min_val;
-    }
-    if (max_val > global_max){
-      global_max = max_val;
-    }
     free(arr);
 
     std::random_device rd;
     std::mt19937 rng(rd());
-    std::uniform_int_distribution<long> uni(0, (k + 1) * size);
+    std::uniform_int_distribution<long> uni((k * size), (k + 1) * size * 2);
     startTime = std::chrono::steady_clock::now();
 
-    for(int j = 0; j < 10; ++j) {
+    for(int j = 0; j < 100; ++j) {
       auto rand_int = uni(rng);
       db->get(rand_int);
     }
     elapsedTime = ::std::chrono::steady_clock::now() - startTime;
     duration = ::std::chrono::duration_cast< ::std::chrono::duration< double > >(elapsedTime).count();
-    std::cout << "," << (duration * 1000) / 10;
+    std::cout << "," << (duration * 1000) / 100;
 
-    // scan 
-
-    std::random_device rd2;
-    std::mt19937 rdm(rd2());
-    std::uniform_int_distribution<long> uni1(0, ((k + 1) * size) / 2);
-    std::uniform_int_distribution<long> uni2(((k + 1) * size) / 2, (k + 1) * size);
-
-    startTime = std::chrono::steady_clock::now();
-    int total_entries = 0;
-
-    std::vector<std::pair<long, long>> lst(0);
-    total_entries = db->scan(lst, global_min, global_max);
-
-
-    elapsedTime = ::std::chrono::steady_clock::now() - startTime;
-    duration = ::std::chrono::duration_cast< ::std::chrono::duration< double >>(elapsedTime).count();
-    std::cout << "," << (duration * 1000) / total_entries;
-
-    std::cout << std::endl;
-    std::cout << "total entries " + std::to_string(lst.size()) + "," << std::to_string(global_min) + "," + std::to_string(global_max) << std::endl;
+    bits_per_entry++;
+    db->update_bloom_filter_param(bits_per_entry);
+   
   }
 }

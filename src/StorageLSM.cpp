@@ -4,6 +4,7 @@
 #include <cstring>
 #include <iostream>
 
+
 int flush_buffer(SST *sst, long *buffer, int buf_size) {
   std::vector<std::pair<long, long>> data;
   
@@ -14,6 +15,8 @@ int flush_buffer(SST *sst, long *buffer, int buf_size) {
 
   std::memset(buffer, 0, buf_size * sizeof(long));
 }
+
+// ---------------- LSM Storage Tree Level -----------------------------
 
 std::string LevelLSM::level_LSM_filepath(int level_num, int sst_num) {
   std::string sst_filename = "SST_" + std::to_string(sst_num) + "_" + std::to_string(level_num) + ".bin";
@@ -288,6 +291,13 @@ SST *LevelLSM::get_sst() {
   return nullptr;
 }
 
+void LevelLSM::update_bloom_filter_param(int bits_per_entry) {
+  if(options.use_bloom_filters) {
+    options.bloom_filter_options.bits_per_entry = bits_per_entry;
+  }
+}
+
+// ---------------- LSM Storage Tree -----------------------------
 
 StorageLSM::StorageLSM(StorageOptions options) : options(options) {
   LevelLSMOptions level_LSM_options = options_utils::storage_to_level(options, 1);
@@ -417,5 +427,16 @@ void StorageLSM::reset() {
     SST *sst_to_delete = level_to_delete->get_sst();
     delete sst_to_delete;
     delete level_to_delete;
+  }
+}
+
+void StorageLSM::update_bloom_filter_param(int bits_per_entry) {
+  if(options.use_bloom_filters) {
+    options.bloom_filter_options.bits_per_entry = bits_per_entry;
+    LevelLSM *curr = first_level;
+    while (curr != nullptr) {
+      curr->update_bloom_filter_param(bits_per_entry);
+      curr = curr->next_level;
+    }
   }
 }

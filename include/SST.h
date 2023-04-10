@@ -168,11 +168,6 @@ class ListSST : public SST {
 
 };
 
-// TODO: Implement BTree search if we have time
-// class BTreeSST : public SST {
-//   public:
-//     long search(long key);
-// };
 
 
 #endif

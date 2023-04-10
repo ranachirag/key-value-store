@@ -96,3 +96,9 @@ void StorageAppendOnly::reset() {
   }
   SSTs.clear();
 }
+
+void StorageAppendOnly::update_bloom_filter_param(int bits_per_entry) {
+  if(options.use_bloom_filters) {
+    options.bloom_filter_options.bits_per_entry = bits_per_entry;
+  }
+}

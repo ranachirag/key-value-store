@@ -89,17 +89,59 @@ class Storage {
      */
     virtual void reset() = 0;
 
+    /**
+     * Update the bits per entry setting for Bloom Filters
+     * 
+     * Note: For EXPERIMENT use only
+     * 
+     * @param bits_per_entry New bits per entry paramter setting for all bloom filters
+     */
+    virtual void update_bloom_filter_param(int bits_per_entry) = 0;
+
 };
 
-
+/**
+ * LSM Tree level configuration options
+ */
 struct LevelLSMOptions {
+  /**
+   * Capacity of an SST file at the level (in units of number of entries)
+   */
   int sst_capacity;
+
+  /**
+   * The level number 
+   */
   int level_num;
+
+  /**
+   * Name of the database open 
+   */
   std::string db_name;
+
+  /**
+   * True if Bloom Filters should be used, false otherwise
+   */
   bool use_bloom_filters;
+
+  /**
+   * Bloom Filter configuration options if Bloom Filters are to be used
+   */
   BloomFilterOptions bloom_filter_options;
+
+  /**
+   * The structure of the SST object to use
+   */
   std::string sst_structure;
+
+  /**
+   * True if the Buffer Pool should be used, false otherwise
+   */
   bool use_buffer_pool;
+
+  /**
+   * Buffer Pool configuration options if Buffer Pool is to be used
+   */
   BufferPool *buffer_pool;
 };
 
@@ -159,9 +201,26 @@ class LevelLSM {
      */
     long get_value(long key, bool &val_found);
 
+    /**
+     * Get the SST object stored in the LSM Level
+     * 
+     * @return SST* SST object
+     */
     SST *get_sst();
 
+    /**
+     * Next level in the LSM Tree
+     */
     LevelLSM *next_level;
+
+    /**
+     * Update the bits per entry setting for Bloom Filters
+     * 
+     * Note: For EXPERIMENT use only
+     * 
+     * @param bits_per_entry New bits per entry paramter setting for all bloom filters
+     */
+    void update_bloom_filter_param(int bits_per_entry);
 
   private:
     /**
@@ -187,8 +246,7 @@ class LevelLSM {
     LevelLSMOptions options;
 
     /**
-     * @brief 
-     * 
+     * SSTs contained in the level of the LSM Tree
      */
     std::vector<SST *> SSTs;
 };
@@ -246,6 +304,15 @@ class StorageLSM : public Storage {
      */
     void reset();
 
+    /**
+     * Update the bits per entry setting for Bloom Filters
+     * 
+     * Note: For EXPERIMENT use only
+     * 
+     * @param bits_per_entry New bits per entry paramter setting for all bloom filters 
+     */
+    void update_bloom_filter_param(int bits_per_entry);
+
   private:
 
     /**
@@ -259,6 +326,7 @@ class StorageLSM : public Storage {
      */
     StorageOptions options;
 };
+
 
 /**
  * This class represents an interface for SST storage using Append Only structure
@@ -312,6 +380,15 @@ class StorageAppendOnly : public Storage {
      * Reset Storage object
      */
     void reset();
+
+    /**
+     * Update the bits per entry setting for Bloom Filters
+     * 
+     * Note: For EXPERIMENT use only
+     * 
+     * @param bits_per_entry New bits per entry paramter setting for all bloom filters 
+     */
+    void update_bloom_filter_param(int bits_per_entry);
 
   private:
     /**

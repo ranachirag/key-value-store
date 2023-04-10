@@ -113,6 +113,15 @@ class Database {
     int update_buffer_pool_size(int new_max_size);
 
     /**
+     * Update the bits per entry setting for Bloom Filters
+     * 
+     * Note: For EXPERIMENT use only
+     * 
+     * @param bits_per_entry New bits per entry paramter setting for all bloom filters
+     */
+    void update_bloom_filter_param(int bits_per_entry);
+
+    /**
      * Close the database
     */
     void close(); 
