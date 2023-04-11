@@ -312,6 +312,12 @@ The goal of this file was to ensure the general integration of the  Database and
 
 # Compilation and running instructions 
 
+### Cloning the repo 
+
+```
+git clone --recursive https://github.com/ranachirag/CSC443-project.git
+```
+
 ### Running main code
 ```
 ./build.sh
@@ -330,4 +336,13 @@ The goal of this file was to ensure the general integration of the  Database and
 ./run_experiments/step1_exp1.sh
 ./run_experiments/step3_exp1.sh
 ./run_experiments/step3_exp2.sh
+```
+
+### Running on Docker
+```
+docker build -t csc443 .
+docker run -it csc443
+git clone --recurse-submodule https://github.com/ranachirag/CSC443-project.git
+cd CSC443-project
+./build.sh
 ```
