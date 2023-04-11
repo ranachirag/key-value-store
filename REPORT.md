@@ -4,7 +4,11 @@
 
 ### Database
 
-The Database object exposes all the elements of the Key-Value store to the users. The user can insert, scan,  in Key-Value pairs (both 8-byte integers). The following Configurations are available to the user:
+The Database object exposes all the elements of the Key-Value store to the users. The user can insert, get, and scan Key-Value pairs (both 8-byte integers) and tune the database paramters. 
+
+The first step is to open a database by giving it a name. Once you are done, the database must be closed. (**Note:** Only one database should be open at any given time).
+
+The following configuration options are available to the user:
 
 ```
   #include "DatabaseMacros.h"
@@ -35,6 +39,19 @@ The Database object exposes all the elements of the Key-Value store to the users
   db_options.storage_structure = LSM_TREE_STORAGE;         // or APPEND_ONLY_STORAGE
 
   Database *kv_store = new Database(db_options);
+  
+  std::string db_name = "my_db";
+  kv_store->open(my_db);
+  
+  kv_store->put(123, 10);
+  
+  long val = kv_store->get(123);
+  
+  std::vector<std::pair<long, long>> lst;
+  int num_results = kv_store->scan(lst, 0, 100);
+  
+  
+  kv_store->close();
 
 }
 ```
