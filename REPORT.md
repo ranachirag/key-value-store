@@ -11,10 +11,12 @@ The first step is to open a database by giving it a name. Once you are done, the
 The following configuration options are available to the user:
 
 ```
-  #include "DatabaseMacros.h"
-  #include "Database.h"
+#include <string>
 
-  int main() {
+#include "DatabaseMacros.h"
+#include "Database.h"
+
+int main() {
   DatabaseOptions db_options;
   db_options.use_buffer_pool = true;                       // Use a Buffer Pool
 
@@ -41,7 +43,7 @@ The following configuration options are available to the user:
   Database *kv_store = new Database(db_options);
   
   std::string db_name = "my_db";
-  kv_store->open(my_db);
+  kv_store->open(db_name);
   
   kv_store->put(123, 10);
   
@@ -50,7 +52,7 @@ The following configuration options are available to the user:
   std::vector<std::pair<long, long>> lst;
   int num_results = kv_store->scan(lst, 0, 100);
   
-  
+
   kv_store->close();
 
 }
