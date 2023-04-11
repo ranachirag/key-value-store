@@ -254,42 +254,52 @@ We also had the following bugs/issues we noticed and were unable to fix:
 ### Experiment 1: Put throughput vs Data Volume
 ![](./assets/Step1Experiments/Step1experiment1put.png)
 
+As we can see the the time taken per put appears to be increasing slightly as the size of the database grows but generally stable around 0.0004 ms. This inline with what we know about inserting data, inserts are generally not affected the growing size of the database.
+
 ### Experiment 2: Get throughput vs Data Volume
 ![](./assets/Step1Experiments/Step1experiment1get.png)
+
+The time taken per get is increasing significantly. This result is inline with what we know about our database, as the data is growing there is more SST files we have search through to find the value we are looking for. 
 
 ### Experiment 3: Scan throughput vs Data Volume
 ![](./assets/Step1Experiments/Step1experiment1scan.png)
 
-## Step 2 Experiment
-
-### Experiment 4: LRU vs Clock
+The scan results are a bit more interesting, it appears to be increasing slightly but there is a large variance in the results. This may be due to introduction of randomness in our experiment process. We would also generally expect the scan time per entry to increase as more data is inserted into the database.
 
 ## Step 3 Experiment 1 with O_DIRECT Flag
 
-### Experiment 6: Put throughput vs Increasing Data Volume
+### Experiment 5: Put throughput vs Increasing Data Volume
 ![](./assets/Step3Experiment1/Step3Experiment1put.png)
 
-### Experiment 7: Get throughput vs Increasing Data Volume 
+The result we get is a bit surprising, there is high variance. For LSM Trees we would expect inserts to be generally fast and take some more time when levels have to be sort-merged and flushed. It is difficult to say definitively that the oscillations in the graph are caused by sort-merges of LSM levels.
+
+### Experiment 6: Get throughput vs Increasing Data Volume 
 ![](./assets/Step3Experiment1/Step3Experiment1get.png)
 
-### Experiment 8: Scan throughput vs Increasing Data Volume
+We can see that the time per get is significantly faster than the results from Step 1 almost by factor of 10-100. This is due to the usage of Bloom Filters, easier to searching for data that doesn't exist and the usage of buffer pool which lets us avoid File I/Os. The general pattern may be due to the randomness introduced in the experiment and not enough sampling done.
+
+### Experiment 7: Scan throughput vs Increasing Data Volume
 ![](./assets/Step3Experiment1/Step3Experiment1scan.png)
+
+As we insert more data, the scan time per entry appears to increasing steadily. As data increases, we may have to search through each level for longer to find the key-value pairs in the provided range. 
 
 ## Step 3 Experiment 2 
 
-### Experiment 9: Get performance for changing bloom filter bits with growing data size
+### Experiment 8: Get performance for changing bloom filter bits with growing data size
 ![](./assets/Step3Experiment2/Step3Experiment.png)
+
+As we can see, increasing the number of bloom filter bits significantly decreases the time per get until a certain point. This is inline with what we would expect as there is a optimal number of bits to use but using too many buts can actually cause add time (for example, inserts take longer).
 
 
 ## Step 3 Bonus Experiment without O_DIRECT Flag
 
-### Experiment 10: Put throughput vs Increasing Data Volume
+### Experiment 9: Put throughput vs Increasing Data Volume
 ![](./assets/Step3ExperimentCustom/Step3ExperimentCustomput.png)
 
-### Experiment 11: Get throughput vs Increasing Data Volume 
+### Experiment 10: Get throughput vs Increasing Data Volume 
 ![](./assets/Step3ExperimentCustom/Step3ExperimentCustomget.png)
 
-### Experiment 12: Scan throughput vs Increasing Data Volume
+### Experiment 11: Scan throughput vs Increasing Data Volume
 ![](./assets/Step3ExperimentCustom/Step3ExperimentCustomscan.png)
 
 
