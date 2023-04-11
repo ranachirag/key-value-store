@@ -274,21 +274,3 @@ void BufferPool::reset_buffer_pool() {
     directory[bucket_index] = nullptr;
   }
 }
-
-// TODO: For DEBUGGING purposes only, REMOVE
-void BufferPool::print_bufpool() {
-  for(int i = 0; i < num_buckets; ++i) {
-    std::cout << "Bucket: " << i << "  Num Frames: "<< directory[i]->frame_count << " Rehashed: " << directory[i]->rehashed << std::endl;
-    bool x = false;
-    Frame *curr = directory[i]->frame;
-    while(curr != nullptr) {
-      x = true;
-      std::cout << "   " << curr->hash_key << " <-- ";
-      curr = curr->next;
-    }
-    if(x) {
-      std::cout << std::endl;
-    }
-  }
-   std::cout << "Number of frames: " << num_frames << std::endl;
-}

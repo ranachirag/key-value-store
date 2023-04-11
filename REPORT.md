@@ -2,31 +2,301 @@
 
 ## Design
 
-### Memtable - AVL Tree
+### Database
 
-### Storage
-
-#### Append Only Storage
+The Database object exposes all the elements of the Key-Value store to the users. It can be configured as following:
 
 
-#### LSM Tree Storage
 
+### Main Memory - Memtable
+
+The Memtable in an interface for accessing and storing Key-Value pairs in main memory.
+
+The Memtable is implemented using an AVL tree data structure. The Nodes in the AVL tree contain the Key and Value. The following functions are supported:
+
+* **Insert** Key-Value pair
+* **Search** for a Value given Key
+* **Range scan** for all Key-Value pairs given a range of two Keys
+* **Update** Value for a given Key (Note: only supported for LSM Tree)
+* **Clear** AVL tree
+
+All Key-Value pairs are first inserted into the AVL tree, as the AVL tree reaches a certain threshold, the data is flushed to Disk Memory for storage and the AVL tree is cleared.
+
+* ***Location:***
+  * [Header File](./include/AVL.h)
+  * [Implementation file](./src/AVL.cpp)
 
 ### SST 
 
-#### List SST
+```SST``` objects represent an interface for interacting with SST (Sorted String Table) files. A ```SST``` object is created for each SST file and the following functionality is supported:
+
+* **Write** Key-Value pairs to the SST file (in units of 4 KB blocks)
+  * As the Key-Values are written to disk, if the [Bloom Filter](#bloom-filters) option is configured, the Keys are inserted into the corresponding Bloom Filter for the SST file
+* **Search** for a Key in the corresponding SST file, implemented using Binary search
+  * First, Binary search over the SST file (in units of 4 KB blocks) to find the block containing the key
+  * Binary search over the block containing the key
+  * If configured, the Buffer Pool is checked first 
+* **Scan** SST file to search for a range of Key-Value pairs, implemented using Binary search
+  * First, Binary search over the SST file (in units of 4 KB blocks) to find the first block containing the start of the range
+  * Blocks are iterated over sequentially until a value outside the range is reached.
+* **Delete** SST file
+  * Used by [LSM Tree storage](#lsm-tree-storage) when SST files are merged and flushed down to next level
+
+**Note:** B-Tree version was not implemented due to dispensation
+
+### Disk Memory - Storage
+
+The Memtable in an interface for accessing and storing Key-Value pairs on disk.
+
+The Disk Memory is implemented as either a Append-Only data structure or a LSM Tree data structure. 
+
+* ***Location:***
+  * ```Storage``` abstract class 
+    * [Header file](./include/Storage.h) 
+
+#### Append-Only Storage
+
+The Append-Only data structure keeps track of [SST objects](#sst) using an array that is sorted in descending order of age (oldest to youngest). It supports the following functionality:
+
+* **Add to storage**, where a Key-Value pairs are converted into a ```SST``` object (subsequently written to disk) and appended to the array of ```SST``` objects
+* **Get Value** given a Key
+  * Search is performed on SST files in descending order of their age
+* **Scan storage** for a given range of Keys
+  * This is implemented as simply the combined result of performing scan over each individual SST file in the array of SSTs
+  * Note: the results are not sorted and their order is entirely dependent on the age of the SST files
+* **Clear storage**, all ```SST``` objects are deallocated
+
+* ***Location:***
+  * ```StorageAppendOnly``` class for Append-Only Storage
+    * [Header file](./include/Storage.h) 
+    * [Implementation](./src/StorageAppendOnly.cpp) 
+
+#### LSM Tree Storage
+
+The LSM Tree is implemted using a Linked list of ```LevelLSM``` objects that each represent a level in a LSM tree. The following  functionality is supported:
+
+* **Add to storage**, where a Key-Value pairs are converted into a ```SST``` object (subsequently written to disk) and the SST is flushed to the first level (the front of the Linked list of ```LevelLSM``` objects)
+  * If compaction is not required, the ```LevelLSM``` object simply stores the ```SST``` object
+  * If compaction is required, the ```SST``` objects at the level are sort-merged and flushed to level below 
+  * Since implementation is recursive, each level handles the inserted SST based on its own state
+  * Note: Since we use a size ratio of 2, each level holds at most one ```SST``` object
+* **Get Value** given a Key
+  * Search is performed by searching through the Linked list of the levels
+  * Implementation is recursive, each level is responsible for searching through the ```SST`` objects it contains
+  * First time the Value found, it is returned and search is stopped as other levels may contain older versions of the Value
+* **Scan storage** for a given range of Keys
+  * This is implemented by allocating a buffer (a block of 4 KB) for every level and reading the ```SST``` object at each level block by block 
+  * The levels are scanned in order, the first level containing a Key-Value in the range is returned as part of the result since that is the latest possible version
+* **Delete Key** 
+  * Delete is implemented by simply inserting a Tombstone (lowest possible value of a 8-byte long integer)
+  * Update is implemented by simply inserting in the latest value as that is the Value that will be at the upper most level and all Values in lower levels will be ignored
+  * Those values will be ignored by Gets and Scans 
+* **Clear storage**, all ```LevelLSM``` and ```SST``` objects are deallocated
+
+* ***Location:***
+  * ```StorageLSM``` class for LSM Tree storage
+    * [Header file](./include/Storage.h) 
+    * [Implementation](./src/StorageLSM.cpp) 
+  * ```LevelLSM``` class for a single level of the LSM Tree
+    * [Header file](./include/Storage.h) 
+    * [Implementation](./src/StorageLSM.cpp) 
+
+### Bloom Filters
+
+The Bloom Filter is stored in each ```SST``` object, as the data is written to the SST file for the corresponding ```SST``` object, it is also inserted into the Bloom Filter.
+
+The Bloom Filter is implemented using an array of boolean values representing the bits and an array of seed values representing the hash functions. The seed values are generated randomly for every Bloom Filter and are passed into a 64-bit function from the xxHash library to fully define the hash functions.
+
+* ***Location:***
+  * ```BloomFilter``` class
+    * [Header file](./include/BloomFilter.h) 
+    * [Implementation](./src/BloomFilter.cpp) 
+
+There are two possible ways to configure the Bloom Filter Paramters:
+
+#### False Positive Rate
+
+The required number of bits and number of hash functions is determined from the False Positive Rate given the formulas from [here](https://en.wikipedia.org/wiki/Bloom_filter#Optimal_number_of_hash_functions). 
+
+* ***Location:***
+  * ```bloom_filter_utils::set_bloom_filter_params``` (1st overloaded function)
+    * [Header file](./include/utils.h) 
+    * [Implementation](./src/utils.cpp) 
+
+#### Bits Per Entry
+
+The number of elements to be inserted into the Bloom Filter is given by the capacity of the SST files (which is a known parameter), in combination with the bits per entry, the number of bits and the number of hash functions are easily set. 
+
+* ***Location:***
+  * ```bloom_filter_utils::set_bloom_filter_params``` (2nd overloaded function)
+    * [Header file](./include/utils.h) 
+    * [Implementation](./src/utils.cpp) 
 
 
 ### Buffer Pool
 
-#### Extendible Hashing
+The Buffer Pool is implemented as an array of ```Bucket``` objects. A ```Bucket``` object points to a Linked list of ```Frame``` objects. Each ```Frame``` object stores a pointer to an allocated buffer of data. 
+
+The Buffer Pool is used to store individual blocks (4 KB chunk) of SST files. The hash key used is the combined string: ```SST_filename``` + ```block_number```.
+
+The Buffer Pool has the following properties:
+
+* **Capacity**
+  * Capacity is determined by the number of Buckets the Buffer Pool can have and the number of Frames per Bucket
+    * This capacity must be a number that is the power of 2
+    * The number of Frames per Bucket determines the expansion criteria
+  * Capacity is also determined by total size (in units of bytes) the Buffer Pool can store 
+  * The capacity in units of bytes takes precedence 
+    * For example, database has capacity of 10 MB and and capacity of 4096 buckets (assuming each Frame stores 4 KB and database requires 1 Frame per Bucket on average, that is a capacity of 16 MB). The 10 MB capacity takes precedence and Frames will be evicted when this capacity is reached.
+* **Eviction**
+  * If the Buffer Pool has reached either capacity defined above, Frame(s) have to be evicted based on a user configured [Eviction Policy](#eviction-policies)
+* **Extendible Hashing**
+  * The capacity (determined by the number of Buckets) is able to expand and shrink
+  * Expansions and shrinkages happen by a factor of 2 since prefix bit hashing is used
+  * When an expansion happens, the capacity of the directory array is doubled and every Bucket is rehashed such that the newly allocated Buckets will point to 
+  * When directory is shrunk, the required amount of frames are evicted, then all Buckets are rehashed using 1 less bit in prefix hashing into the first half of the directory and the second half of the directory is deallocated
+* **Rehashing Buckets**
+  * Buckets are rehashed every time they are accessed (either for insertion of data or for retreival of data)
+
+* ***Location:***
+  * ```Buffer Pool``` class for Buffer Pool object
+    * [Header file](./include/BufferPool.h) 
+    * [Implementation file](./src/BufferPool.cpp)
+  * ```update_directory_size``` function for Directory size update (Extendible Hashing)
+    * [Header file](./include/BufferPool.h) 
+    * [Implementation file](./src/BufferPool.cpp)
+  * ```buffer_pool_utils::rehash_bucket``` function for Rehashing bucket
+    * [Header file](./include/utils.h) 
+    * [Implementation file](./src/utils.cpp)
 
 
 #### Eviction Policies
 
+There are two Eviction Policies that can be used for determining which Frame to evict. Every frame contains contains a void pointer named ```metadata```. This value is set/used differently depending on the specific eviction polciy
+
+* ***Location:***
+  * ```EvictionPolicy``` abstract class
+    * [Header file](./include/EvictionPolicy.h)
+
 ##### CLOCK
+
+The clock eviction policy sets the ```metadata```` pointer to refer to either 1 or 0. The algorithm consists of looping over each Bucket in the directory sequentially and finding the next possible Frame to evict. After a Frame is evicted, the clock handle searches for to next frame for eviction and stays there untill next time eviction function is called.
+
+Note: Since Frames can be rehashed, a frame can possibly "skip" eviction and this policy might not be entirely fair as it is expected. Although it should be a rare event.
+
+* ***Location:***
+  * ```ClockEvictionPolicy``` class
+    * [Header file](./include/EvictionPolicy.h)
+    * [Implementation file](./src/EvictionPolicy.cpp)
 
 ##### LRU
 
+The LRU eviction policy makes use of an extra data structure - a Linked list of ```EvictionNode``` objects with a front and a back. When a Frame is created, a corresponding ```EvictionNode``` object is created and the ```metadata``` pointer in the Frame points to that ```EvictionNode``` object. Eviction is simply just taking the ```EvictionNode``` at the front of the Linked list and evicting its corresponding Frame. If a Frame is accessed, it is sent to the back of the Linked list.
+
+* ***Location:***
+  * ```LRUEvictionPolicy``` class
+    * [Header file](./include/EvictionPolicy.h)
+    * [Implementation file](./src/EvictionPolicy.cpp)
 
 
+## Project Status
+
+We were unable to implement the following:
+
+  * Step 2, Experiment 1  
+  * Step 2, Experiment 2 and B-Tree search for SSTs - Dispensation
+  * Bloom Filter integration into SST file - Dispensation
+    * Instead we load in SST key-values by reading the data from the SST file, using different seed values every time
+  * Bloom Filter integration into Buffer Pool - Dispensation
+
+We also had the following bugs/issues we noticed and were unable to fix:
+
+  * Buffer Pool integration when sort-merging SSTs files for LSM Tree compaction
+    * This did not work as we expected so we don't use Buffer Pool in this case
+
+
+
+<!-- Experiments  -->
+
+## Step 1 Experiments
+
+### Experiment 1: Put throughput vs Data Volume
+![](./assets/Step1Experiments/Step1experiment1put.png)
+
+### Experiment 2: Get throughput vs Data Volume
+![](./assets/Step1Experiments/Step1experiment1get.png)
+
+### Experiment 3: Scan throughput vs Data Volume
+![](./assets/Step1Experiments/Step1experiment1scan.png)
+
+## Step 2 Experiment
+
+### Experiment 4: LRU vs Clock
+
+## Step 3 Experiment 1 with O_DIRECT Flag
+
+### Experiment 6: Put throughput vs Increasing Data Volume
+![](./assets/Step3Experiment1/Step3Experiment1put.png)
+
+### Experiment 7: Get throughput vs Increasing Data Volume 
+![](./assets/Step3Experiment1/Step3Experiment1get.png)
+
+### Experiment 8: Scan throughput vs Increasing Data Volume
+![](./assets/Step3Experiment1/Step3Experiment1scan.png)
+
+## Step 3 Experiment 2 
+
+### Experiment 9: Get performance for changing bloom filter bits with growing data size
+![](./assets/Step3Experiment2/Step3Experiment.png)
+
+
+## Step 3 Bonus Experiment without O_DIRECT Flag
+
+### Experiment 10: Put throughput vs Increasing Data Volume
+![](./assets/Step3ExperimentCustom/Step3ExperimentCustomput.png)
+
+### Experiment 11: Get throughput vs Increasing Data Volume 
+![](./assets/Step3ExperimentCustom/Step3ExperimentCustomget.png)
+
+### Experiment 12: Scan throughput vs Increasing Data Volume
+![](./assets/Step3ExperimentCustom/Step3ExperimentCustomscan.png)
+
+
+<!-- Testing -->
+
+# Unit tests
+
+Testing the functionality of our database intially ended up being very fruitful, as we updated the database with more features through the steps we used both unit and integration tests to make sure our code worked. 
+We used unit tests for `AVL.cpp` and integration tests for `Database.cpp`. 
+
+### AVL.cpp
+The goal of this file was to ensure the main functions of the AVL tree were functioning as expected. The crucial unit tests that led to the discovery of bugs were tests for the following functions: `get_balance_factor`, `reset_tree`, `range_search`, and `balance_tree`. We also added tests to ensure all the rotaions for an AVL tree worked as expected (left-right, etc.).
+
+### Database.cpp
+The goal of this file was to ensure the general integration of the  Database and its key functions, `put`, `get`, and `scan`. We set the options for the database to include bloom filters, lsm trees, and clock eviction algorithm. 
+
+
+
+<!-- Compilation & running instructions -->
+
+# Compilation and running instructions 
+
+### Running main code
+```
+./build.sh
+./run_src.sh
+```
+
+### Running tests
+```
+./build.sh
+./run_test.sh
+```
+
+### Running experiments
+```
+./build.sh
+./run_experiments/step1_exp1.sh
+./run_experiments/step3_exp1.sh
+./run_experiments/step3_exp2.sh
+```

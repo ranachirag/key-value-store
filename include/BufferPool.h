@@ -85,11 +85,6 @@ class BufferPool {
      */
     void reset_buffer_pool();
 
-    /**
-     * TODO: Remove This function, for Debugging purposes only
-     * 
-     */
-    void print_bufpool();
 
   private:
     /**

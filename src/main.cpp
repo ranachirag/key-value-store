@@ -79,6 +79,7 @@ int main() {
   db_options.sst_structure = LIST_SST;
   db_options.storage_structure = LSM_TREE_STORAGE;
 
+
   Database *kv_store = new Database(db_options);
 
 
@@ -94,21 +95,21 @@ int main() {
 
   for (int i = 0; i < 1000000; ++i) {
       
-      // if(i == 70000) {
-      //   kv_store->remove(500); // TODO: Remove not working 
-      // }
+      if(i == 700000) {
+        kv_store->update_bloom_filter_param(8); // TODO: Remove not working 
+      }
       // int key_val = i;
       // kv_store->put(key_val, key_val+1);
-      kv_store->get(i);
+      kv_store->put(i, i);
       // std::cout << "HERE: " << kv_store->get(i) << std::endl;
   }
 
   
-  // std::cout << "HERE: " << kv_store->remove(5) << std::endl;
+  std::cout << "HERE: " << kv_store->get(1000) << std::endl;
   
 
   // std::vector<std::pair<long, long> > vals;
-  // int entries = kv_store->scan(vals, 0, 1000);
+  // int entries = kv_store->scan(vals, 1000000-3, 1000010);
   // std::cout << entries << std::endl;
 
   // for(std::pair<long, long> pair : vals) {
