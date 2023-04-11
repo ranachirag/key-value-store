@@ -250,6 +250,10 @@ We also had the following bugs/issues we noticed and were unable to fix:
 <!-- Experiments  -->
 
 ## Step 1 Experiments
+For step 1 experiments we wanted to measure the throughputs over intervals of data volume. There are two parameters `run_experiments` function, `total_mb` and `interval_mb`. `total_mb` indicates the total data volume of the database at the end of the experiment, the value used in this experiment is `1024` MB. `interval_mb` indicates the interval in which the data is added and the throughput is measured, the value used in this experiment is `64` MB, so there are 16 points at which throughputs are measured. 
+We use a for loop to run experiments for each interval. In each loop we first create an array of size `interval_mb` * 65536 * 8, where `65536` is the number of entries in `1MB` of data. We then shuffle the array to add randomization to our first experiment, `put`, we measure how long it takes us to add `65536` values. In order to not repeat existing values, at each iteration of the loop we add k (the loop variable) * 65536 to each element of the array after shuffling. The final outputted time is the duration it took to add all the values in the array divided by the number of elements added. 
+The next experiment we test in the same iteration is `get`. In order to add randomization to our experiment, we randomly pick 10 values that have already been inserted into the array. We time the 10 get calls and output the average time per get, or the duration it takes for all 10 get calls divided by 10.
+The last experiment we test in the same iteration is `scan`. Adding randomization with many repetitions would be ideal for this experiment but due to the time it takes to run each scan operation, it would not have been feasible to run 100 iterations of the operation for each interval. So instead we decided to run one scan operation from the minimum key to the maximum key in the database, and we outputted the duration of the scan operation divided by the total number of entries found in the database. 
 
 ### Experiment 1: Put throughput vs Data Volume
 ![](./assets/Step1Experiments/Step1experiment1put.png)
@@ -267,6 +271,7 @@ The time taken per get is increasing significantly. This result is inline with w
 The scan results are a bit more interesting, it appears to be increasing slightly but there is a large variance in the results. This may be due to introduction of randomness in our experiment process. We would also generally expect the scan time per entry to increase as more data is inserted into the database.
 
 ## Step 3 Experiment 1 with O_DIRECT Flag
+The experiment structure was the same from Step 1, and the change we made for this step was using the bloom filter and the O_DIRECT flag. 
 
 ### Experiment 5: Put throughput vs Increasing Data Volume
 ![](./assets/Step3Experiment1/Step3Experiment1put.png)
@@ -292,6 +297,7 @@ As we can see, increasing the number of bloom filter bits significantly decrease
 
 
 ## Step 3 Bonus Experiment without O_DIRECT Flag
+The experiment structure was the same from Step 1 and Step 3, and the change we made for this step was using the bloom filter without the O_DIRECT flag. 
 
 ### Experiment 9: Put throughput vs Increasing Data Volume
 ![](./assets/Step3ExperimentCustom/Step3ExperimentCustomput.png)
