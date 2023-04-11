@@ -106,7 +106,6 @@ void Database::put(long key, long value) {
   
 }
 
-// TODO: Error checking for when key doesn't exist, How to handle?
 long Database::get(long key) {
   if(!db_open) {
     perror("Please open a database first");
@@ -128,7 +127,7 @@ long Database::get(long key) {
     return val;
   }
 
-  return -1;
+  return LONG_MIN;
   
 }
 
