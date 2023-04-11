@@ -5,9 +5,10 @@
 
 #include "AVL.h"
 #include "Node.h"
-#include <gtest/gtest.h>
-
+#include "BufferPool.h"
 #include "Database.h"
+
+#include <gtest/gtest.h>
 #include <vector>
 #include <string>
 
@@ -32,17 +33,28 @@ class Database_test : public ::testing::Test{
 
 TEST_F(Database_test, opentest) {
   BufferPoolOptions buf_options;
-  buf_options.initial_size = 2;
-  buf_options.max_size = 4;
+  buf_options.initial_size = 1024;
+  buf_options.max_size = 4096; // 4096 buckets can hold 4096 frames of 4kB which is 16 MB
+  buf_options.max_size_bytes = NUM_BYTES_MB * 10; // 10 MB
+  buf_options.evict_policy = CLOCK_EVICT;
+
+  BloomFilterOptions bloom_filter_options;
+  bloom_filter_options.parameter_setting = BITS_PER_ENTRY;
+  bloom_filter_options.bits_per_entry = 5;
 
   DatabaseOptions db_options;
   db_options.use_buffer_pool = true;
   db_options.buffer_pool_options = buf_options;
-  db_options.memtable_size = 100;
+  db_options.memtable_size = NUM_BYTES_MB * 1;
+  db_options.use_bloom_filters = true;
+  db_options.bloom_filter_options = bloom_filter_options;
+  db_options.sst_structure = LIST_SST;
+  db_options.storage_structure = LSM_TREE_STORAGE;
 
   db = new Database(db_options);
 
   db->open("testdb");
+  // test that if we open another db with the same name that we get an error
   const char* expected_error_message = "Please close the testdb database first";
   testing::internal::CaptureStderr();
   db->open("testdb");
@@ -55,13 +67,23 @@ TEST_F(Database_test, opentest) {
 
 TEST_F(Database_test, putGetTest) {
   BufferPoolOptions buf_options;
-  buf_options.initial_size = 2;
-  buf_options.max_size = 4;
+  buf_options.initial_size = 1024;
+  buf_options.max_size = 4096; // 4096 buckets can hold 4096 frames of 4kB which is 16 MB
+  buf_options.max_size_bytes = NUM_BYTES_MB * 10; // 10 MB
+  buf_options.evict_policy = CLOCK_EVICT;
+
+  BloomFilterOptions bloom_filter_options;
+  bloom_filter_options.parameter_setting = BITS_PER_ENTRY;
+  bloom_filter_options.bits_per_entry = 5;
 
   DatabaseOptions db_options;
   db_options.use_buffer_pool = true;
   db_options.buffer_pool_options = buf_options;
-  db_options.memtable_size = 100;
+  db_options.memtable_size = NUM_BYTES_MB * 1;
+  db_options.use_bloom_filters = true;
+  db_options.bloom_filter_options = bloom_filter_options;
+  db_options.sst_structure = LIST_SST;
+  db_options.storage_structure = LSM_TREE_STORAGE;
 
   db = new Database(db_options);
 
@@ -74,13 +96,23 @@ TEST_F(Database_test, putGetTest) {
 
 TEST_F(Database_test, scanTest) {
   BufferPoolOptions buf_options;
-  buf_options.initial_size = 2;
-  buf_options.max_size = 4;
+  buf_options.initial_size = 1024;
+  buf_options.max_size = 4096; // 4096 buckets can hold 4096 frames of 4kB which is 16 MB
+  buf_options.max_size_bytes = NUM_BYTES_MB * 10; // 10 MB
+  buf_options.evict_policy = CLOCK_EVICT;
+
+  BloomFilterOptions bloom_filter_options;
+  bloom_filter_options.parameter_setting = BITS_PER_ENTRY;
+  bloom_filter_options.bits_per_entry = 5;
 
   DatabaseOptions db_options;
   db_options.use_buffer_pool = true;
   db_options.buffer_pool_options = buf_options;
-  db_options.memtable_size = 100;
+  db_options.memtable_size = NUM_BYTES_MB * 1;
+  db_options.use_bloom_filters = true;
+  db_options.bloom_filter_options = bloom_filter_options;
+  db_options.sst_structure = LIST_SST;
+  db_options.storage_structure = LSM_TREE_STORAGE;
 
   db = new Database(db_options);
   
