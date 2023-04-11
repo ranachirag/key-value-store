@@ -6,8 +6,10 @@
 ![](./assets/Step1Experiments/Step1experiment1put.png)
 
 ### Experiment 2: Get throughput vs Data Volume
+![](./assets/Step1Experiments/Step1experiment1get.png)
 
 ### Experiment 3: Scan throughput vs Data Volume
+![](./assets/Step1Experiments/Step1experiment1scan.png)
 
 # Step 2 Experiment
 
@@ -16,22 +18,30 @@
 # Step 3 Experiment 1 with O_DIRECT Flag
 
 ### Experiment 6: Put throughput vs Increasing Data Volume
+![](./assets/Step3Experiment1 /Step3Experiment1put.png)
 
 ### Experiment 7: Get throughput vs Increasing Data Volume 
+![](./assets/Step3Experiment1 /Step3Experiment1get.png)
 
 ### Experiment 8: Scan throughput vs Increasing Data Volume
+![](./assets/Step3Experiment1 /Step3Experiment1scan.png)
 
 # Step 3 Experiment 2 
 
 ### Experiment 9: Get performance for changing bloom filter bits with growing data size
+![](./assets/Step3Experiment2/Step3Experiment.png)
+
 
 # Step 3 Bonus Experiment without O_DIRECT Flag
 
 ### Experiment 10: Put throughput vs Increasing Data Volume
+![](./assets/Step3ExperimentCustom /Step3ExperimentCustomput.png)
 
 ### Experiment 11: Get throughput vs Increasing Data Volume 
+![](./assets/Step3ExperimentCustom /Step3ExperimentCustomget.png)
 
 ### Experiment 12: Scan throughput vs Increasing Data Volume
+![](./assets/Step3ExperimentCustom /Step3ExperimentCustomscan.png)
 
 
 <!-- Testing -->
