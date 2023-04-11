@@ -51,6 +51,11 @@
 Testing the functionality of our database intially ended up being very fruitful, as we updated the database with more features through the steps we used both unit and integration tests to make sure our code worked. 
 We used unit tests for `AVL.cpp` and integration tests for `Database.cpp`. 
 
+### AVL.cpp
+The goal of this file was to ensure the main functions of the AVL tree were functioning as expected. The crucial unit tests that led to the discovery of bugs were tests for the following functions: `get_balance_factor`, `reset_tree`, `range_search`, and `balance_tree`. We also added tests to ensure all the rotaions for an AVL tree worked as expected (left-right, etc.).
+
+### Database.cpp
+The goal of this file was to ensure the general integration of the  Database and its key functions, `put`, `get`, and `scan`. We set the options for the database to include bloom filters, lsm trees, and clock eviction algorithm. 
 
 
 
