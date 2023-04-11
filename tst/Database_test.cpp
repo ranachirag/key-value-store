@@ -17,21 +17,10 @@ class Database_test : public ::testing::Test{
     Database* db;
 
     Database_test(){};
-
-    // virtual void SetUp() override {
-    //   db = new Database(100);
-    //   db->open("testdb");
-    //   std::cout << "SetUp called";
-    // }
-
-    // virtual void TearDown() override {
-    //   std::cout << "TearDown called";
-    //   db->close();
-    //   delete db;
-    // }
 };
 
 TEST_F(Database_test, opentest) {
+  // setting db options
   BufferPoolOptions buf_options;
   buf_options.initial_size = 1024;
   buf_options.max_size = 4096; // 4096 buckets can hold 4096 frames of 4kB which is 16 MB
@@ -54,10 +43,13 @@ TEST_F(Database_test, opentest) {
   db = new Database(db_options);
 
   db->open("testdb");
+
   // test that if we open another db with the same name that we get an error
   const char* expected_error_message = "Please close the testdb database first";
   testing::internal::CaptureStderr();
+
   db->open("testdb");
+  // assert that we get the expected error message
   std::string err_msg = testing::internal::GetCapturedStderr();
   std::string actual_error_message = err_msg.substr(0, err_msg.find(":"));
   EXPECT_EQ(actual_error_message, expected_error_message);
@@ -66,6 +58,7 @@ TEST_F(Database_test, opentest) {
 }
 
 TEST_F(Database_test, putGetTest) {
+  // set db options
   BufferPoolOptions buf_options;
   buf_options.initial_size = 1024;
   buf_options.max_size = 4096; // 4096 buckets can hold 4096 frames of 4kB which is 16 MB
@@ -87,6 +80,7 @@ TEST_F(Database_test, putGetTest) {
 
   db = new Database(db_options);
 
+  // test that the added entry is in the db
   db->open("testputget");
   db->put(0,0);
   ASSERT_EQ(db->get(0), 0);
@@ -95,6 +89,7 @@ TEST_F(Database_test, putGetTest) {
 }
 
 TEST_F(Database_test, scanTest) {
+  // set db options 
   BufferPoolOptions buf_options;
   buf_options.initial_size = 1024;
   buf_options.max_size = 4096; // 4096 buckets can hold 4096 frames of 4kB which is 16 MB
@@ -116,6 +111,7 @@ TEST_F(Database_test, scanTest) {
 
   db = new Database(db_options);
   
+  // test that a value not inserted in db does not exist
   db->open("testscan");
   ASSERT_EQ(db->get(0), -1);
   db->put(0,0);
@@ -124,6 +120,7 @@ TEST_F(Database_test, scanTest) {
   db->put(3,3);
   db->put(5,5);
   std::vector<std::pair<long, long> > lst;
+  // test that inserted values are present in the db
   ASSERT_EQ(db->scan(lst, 1, 1), 1);
   ASSERT_EQ(db->scan(lst, 0, 4), 4);
   ASSERT_EQ(db->scan(lst, 0, 5), 5);    
