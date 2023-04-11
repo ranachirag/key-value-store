@@ -77,7 +77,7 @@ All Key-Value pairs are first inserted into the AVL tree, as the AVL tree reache
 
 ### Disk Memory - Storage
 
-The Memtable in an interface for accessing and storing Key-Value pairs on disk.
+The Memtable is an interface for accessing and storing Key-Value pairs on disk.
 
 The Disk Memory is implemented as either a Append-Only data structure or a LSM Tree data structure. 
 
@@ -211,7 +211,7 @@ There are two Eviction Policies that can be used for determining which Frame to 
 
 ##### CLOCK
 
-The clock eviction policy sets the ```metadata```` pointer to refer to either 1 or 0. The algorithm consists of looping over each Bucket in the directory sequentially and finding the next possible Frame to evict. After a Frame is evicted, the clock handle searches for to next frame for eviction and stays there untill next time eviction function is called.
+The clock eviction policy sets the ```metadata``` pointer to refer to either 1 or 0. The algorithm consists of looping over each Bucket in the directory sequentially and finding the next possible Frame to evict. After a Frame is evicted, the clock handle searches for to next frame for eviction and stays there untill next time eviction function is called.
 
 Note: Since Frames can be rehashed, a frame can possibly "skip" eviction and this policy might not be entirely fair as it is expected. Although it should be a rare event.
 
