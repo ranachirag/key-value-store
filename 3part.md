@@ -48,6 +48,12 @@
 
 # Unit tests
 
+Testing the functionality of our database intially ended up being very fruitful, as we updated the database with more features through the steps we used both unit and integration tests to make sure our code worked. 
+We used unit tests for `AVL.cpp` and integration tests for `Database.cpp`. 
+
+
+
+
 <!-- Compilation & running instructions -->
 
 # Compilation and running instructions 
