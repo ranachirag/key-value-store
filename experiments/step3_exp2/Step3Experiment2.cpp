@@ -38,7 +38,7 @@ void Step3Experiment2::run_experiments(int total_mb, int interval_mb) {
   for (int k = 0; k < num_intervals; k++){
 
     std::cout << (k + 1) * interval_mb << ",";
-    std::cout << bits_per_entry << ",";
+    std::cout << bits_per_entry ;
 
     int *arr = (int *) malloc(size * 8);
 

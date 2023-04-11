@@ -244,7 +244,7 @@ int ListSST::scan(std::vector<std::pair<long, long> > &result, long key1, long k
   long block_containing_key = search_utils::binary_search_range_blocks(options.filepath, num_blocks, key1, key2);
   
   if(block_containing_key >= 0) {
-    
+
     void *buffer;
     int error_code = posix_memalign(&buffer, BLOCK_SIZE, BLOCK_SIZE);
     if(error_code != 0) {
@@ -289,7 +289,6 @@ int ListSST::delete_sst_file() {
   int code = std::remove(options.filepath.c_str());
 
   if(code != 0){
-    perror("Could not delete file");
     return -1;
   }
   return 0;
