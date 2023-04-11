@@ -18,13 +18,13 @@
 # Step 3 Experiment 1 with O_DIRECT Flag
 
 ### Experiment 6: Put throughput vs Increasing Data Volume
-![](./assets/Step3Experiment1 /Step3Experiment1put.png)
+![](./assets/Step3Experiment1/Step3Experiment1put.png)
 
 ### Experiment 7: Get throughput vs Increasing Data Volume 
-![](./assets/Step3Experiment1 /Step3Experiment1get.png)
+![](./assets/Step3Experiment1/Step3Experiment1get.png)
 
 ### Experiment 8: Scan throughput vs Increasing Data Volume
-![](./assets/Step3Experiment1 /Step3Experiment1scan.png)
+![](./assets/Step3Experiment1/Step3Experiment1scan.png)
 
 # Step 3 Experiment 2 
 
@@ -35,13 +35,13 @@
 # Step 3 Bonus Experiment without O_DIRECT Flag
 
 ### Experiment 10: Put throughput vs Increasing Data Volume
-![](./assets/Step3ExperimentCustom /Step3ExperimentCustomput.png)
+![](./assets/Step3ExperimentCustom/Step3ExperimentCustomput.png)
 
 ### Experiment 11: Get throughput vs Increasing Data Volume 
-![](./assets/Step3ExperimentCustom /Step3ExperimentCustomget.png)
+![](./assets/Step3ExperimentCustom/Step3ExperimentCustomget.png)
 
 ### Experiment 12: Scan throughput vs Increasing Data Volume
-![](./assets/Step3ExperimentCustom /Step3ExperimentCustomscan.png)
+![](./assets/Step3ExperimentCustom/Step3ExperimentCustomscan.png)
 
 
 <!-- Testing -->
