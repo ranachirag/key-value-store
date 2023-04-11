@@ -3,6 +3,7 @@
 # Step 1 Experiments
 
 ### Experiment 1: Put throughput vs Data Volume
+![](./assets/Step1Experiments/Step1experiment1put.png)
 
 ### Experiment 2: Get throughput vs Data Volume
 
@@ -60,4 +61,3 @@
 ./run_experiments/step3_exp1.sh
 ./run_experiments/step3_exp2.sh
 ```
-
