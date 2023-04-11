@@ -1,5 +1,7 @@
 # Key-Value Store
 
+Please take a look at [REPORT.md](./REPORT.md) for our report.
+
 ## Installation
 
 ### Cloning the repo 
@@ -37,7 +39,6 @@ cd CSC443-project
 ./build.sh
 ```
 
-
 ## Generate Documentation
 
 - Install [doxygen](https://doxygen.nl/download.html)
@@ -47,33 +48,7 @@ doxygen Doxyfile
 open ./html/index.html
 ```
 
-## Design
+## Authors
 
-### Memtable - AVL Tree
-
-### Storage
-
-#### Append Only Storage
-
-
-#### LSM Tree Storage
-
-
-### SST 
-
-#### List SST
-
-
-### Buffer Pool
-
-#### Extendible Hashing
-
-
-#### Eviction Policies
-
-##### CLOCK
-
-##### LRU
-
-
-
+* Chirag Rana
+* Rutav Shah
