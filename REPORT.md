@@ -249,24 +249,7 @@ The LRU eviction policy makes use of an extra data structure - a Linked list of 
     * [Implementation file](./src/EvictionPolicy.cpp)
 
 
-## Project Status
-
-We were unable to implement the following:
-
-  * Step 2, Experiment 1  
-  * Step 2, Experiment 2 and B-Tree search for SSTs - Dispensation
-  * Bloom Filter integration into SST file - Dispensation
-    * Instead we load in SST key-values by reading the data from the SST file, using different seed values every time
-  * Bloom Filter integration into Buffer Pool - Dispensation
-
-We also had the following bugs/issues we noticed and were unable to fix:
-
-  * Buffer Pool integration when sort-merging SSTs files for LSM Tree compaction
-    * This did not work as we expected so we don't use Buffer Pool in this case
-
-
-
-<!-- Experiments  -->
+# Experiments 
 
 ## Step 1 Experiments
 For step 1 experiments we wanted to measure the throughputs over intervals of data volume. There are two parameters `run_experiments` function, `total_mb` and `interval_mb`. `total_mb` indicates the total data volume of the database at the end of the experiment, the value used in this experiment is `1024` MB. `interval_mb` indicates the interval in which the data is added and the throughput is measured, the value used in this experiment is `64` MB, so there are 16 points at which throughputs are measured. 
@@ -345,43 +328,3 @@ The goal of this file was to ensure the main functions of the AVL tree were func
 ### Database.cpp
 The goal of this file was to ensure the general integration of the  Database and its key functions, `put`, `get`, and `scan`. We set the options for the database to include bloom filters, lsm trees, and clock eviction algorithm. 
 
-
-
-<!-- Compilation & running instructions -->
-
-# Compilation and running instructions 
-
-### Cloning the repo 
-
-```
-git clone --recursive https://github.com/ranachirag/CSC443-project.git
-```
-
-### Running main code
-```
-./build.sh
-./run_src.sh
-```
-
-### Running tests
-```
-./build.sh
-./run_test.sh
-```
-
-### Running experiments
-```
-./build.sh
-./run_experiments/step1_exp1.sh
-./run_experiments/step3_exp1.sh
-./run_experiments/step3_exp2.sh
-```
-
-### Running on Docker
-```
-docker build -t csc443 .
-docker run -it csc443
-git clone --recurse-submodule https://github.com/ranachirag/CSC443-project.git
-cd CSC443-project
-./build.sh
-```

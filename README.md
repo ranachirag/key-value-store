@@ -4,6 +4,8 @@ A highly configurable disk-based persistent Key-Value store written in C++ that 
 
 ![Architecture](./assets/ArchDiagram.png)
 
+[For additional details on the design of the Key-Value store.](./REPORT.md)
+
 ## Requirements
 
 * [CMake](https://cmake.org/install/) v3.24
