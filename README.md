@@ -2,7 +2,7 @@
 
 A highly configurable disk-based persistent Key-Value store written in C++ that supports get, put, delete, and range scan operations. It utilizes various components like Log-Structured Merge Tree with Bloom Filters, customizable Buffer Pool (with 2 eviction policies) and AVL Tree to enhance get and put throughputs. 
 
-![Architecture](./assets/ArchDiagram.png)
+![Architecture](./assets/ArchDiagram.jpg)
 
 [For additional details on the design of the Key-Value store.](./REPORT.md)
 
