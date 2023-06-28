@@ -251,8 +251,8 @@ The LRU eviction policy makes use of an extra data structure - a Linked list of 
 
 # Experiments 
 
-## Step 1 Experiments
-For step 1 experiments we wanted to measure the throughputs over intervals of data volume. There are two parameters `run_experiments` function, `total_mb` and `interval_mb`. `total_mb` indicates the total data volume of the database at the end of the experiment, the value used in this experiment is `1024` MB. `interval_mb` indicates the interval in which the data is added and the throughput is measured, the value used in this experiment is `64` MB, so there are 16 points at which throughputs are measured. 
+## Throughputs over intervals
+For the first experiment we wanted to measure the throughputs over intervals of data volume. There are two parameters `run_experiments` function, `total_mb` and `interval_mb`. `total_mb` indicates the total data volume of the database at the end of the experiment, the value used in this experiment is `1024` MB. `interval_mb` indicates the interval in which the data is added and the throughput is measured, the value used in this experiment is `64` MB, so there are 16 points at which throughputs are measured. 
 
 We use a for loop to run experiments for each interval. In each loop we first create an array of size `interval_mb` * 65536 * 8, where `65536` is the number of entries in `1MB` of data. We then shuffle the array to add randomization to our first experiment, `put`, we measure how long it takes us to add `65536` values. In order to not repeat existing values, at each iteration of the loop we add k (the loop variable) * 65536 to each element of the array after shuffling. The final outputted time is the duration it took to add all the values in the array divided by the number of elements added. 
 
@@ -276,8 +276,8 @@ The time taken per get is increasing significantly. This result is inline with w
 
 The scan results are a bit more interesting, it appears to be increasing slightly but there is a large variance in the results. This may be due to introduction of randomness in our experiment process. We would also generally expect the scan time per entry to increase as more data is inserted into the database.
 
-## Step 3 Experiment 1 with O_DIRECT Flag
-The experiment structure was the same from Step 1, and the change we made for this step was using the bloom filter and the O_DIRECT flag. 
+## Throughputs over intervals with bloom filters and O_DIRECT flag
+The experiment structure was the same as the previous set and the difference was the inclusion of the bloom filter and the O_DIRECT flag. 
 
 ### Experiment 5: Put throughput vs Increasing Data Volume
 ![](./assets/Step3Experiment1/Step3Experiment1put.png)
@@ -294,7 +294,7 @@ We can see that the time per get is significantly faster than the results from S
 
 As we insert more data, the scan time per entry appears to increasing steadily. As data increases, we may have to search through each level for longer to find the key-value pairs in the provided range. 
 
-## Step 3 Experiment 2 
+## Get throughput with changing bloom filter bits and growing data size
 
 ### Experiment 8: Get performance for changing bloom filter bits with growing data size
 ![](./assets/Step3Experiment2/Step3Experiment.png)
@@ -302,7 +302,7 @@ As we insert more data, the scan time per entry appears to increasing steadily. 
 As we can see, increasing the number of bloom filter bits significantly decreases the time per get until a certain point. This is inline with what we would expect as there is a optimal number of bits to use but using too many buts can actually cause add time (for example, inserts take longer).
 
 
-## Step 3 Bonus Experiment without O_DIRECT Flag
+## Throughputs over intervals with bloom filters and without O_DIRECT flag
 The experiment structure was the same from Step 1 and Step 3, and the change we made for this step was using the bloom filter without the O_DIRECT flag. 
 
 ### Experiment 9: Put throughput vs Increasing Data Volume
